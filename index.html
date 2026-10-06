@@ -9,18 +9,22 @@
 </head>
 <body>
 <iframe id="tour" src="tour.html" title="Tour virtual R02" allow="geolocation; fullscreen; accelerometer; gyroscope" allowfullscreen></iframe>
-<details open><summary>Teste de localização · R02</summary><div class="panel">
-<p>Testa o ponto de entrada no tour sem estar no local. Fecha este painel para explorar a imagem.</p>
+<details open><summary>Teste de localização · R02 · v2</summary><div class="panel">
+<p>Testa a mudança automática de panorama sem estar no local. Fecha este painel para explorar a imagem.</p>
 <label for="scenario">Posição simulada</label><select id="scenario" disabled><option>A carregar os pontos…</option></select>
 <button id="simulate" disabled>Testar posição simulada</button>
+<button id="route" disabled>Simular caminhada pela tour</button>
 <details style="position:static;width:100%;margin-top:10px;box-shadow:none"><summary>Introduzir coordenadas</summary><div class="panel">
 <div class="row"><label>Latitude<input id="lat" type="number" step="any" min="-90" max="90"></label><label>Longitude<input id="lng" type="number" step="any" min="-180" max="180"></label></div>
 <button id="custom" class="secondary" disabled>Testar coordenadas</button></div></details>
 <button id="gps" class="secondary" disabled>Usar localização real do telemóvel</button>
+<button id="follow" disabled>Acompanhar localização em tempo real</button>
+<button id="stop" class="secondary" disabled>Parar acompanhamento / simulação</button>
 <button id="reset" class="secondary" disabled>Voltar ao início</button>
 <p id="status" role="status" aria-live="polite">A carregar o tour…</p>
-<small>Raio de teste: 100 m até ao panorama mais próximo. Fora dessa distância, abre o início. A localização simulada não altera o GPS do aparelho. Esta versão de teste só usa a localização real quando carregas no botão.</small>
+<details style="position:static;width:100%;margin-top:10px;box-shadow:none"><summary>Diagnóstico de localização</summary><div class="panel"><p id="diagnostics" style="white-space:pre-line">A verificar…</p><a href="https://jf-cem.github.io/tour-r02-teste/?v=2" target="_blank" rel="noopener" style="color:#b9ebd0">Abrir diretamente no navegador</a></div></details>
+<small>Raio: 100 m. Fora da área, abre o início. O acompanhamento exige a página aberta e posições com precisão de 20 m ou melhor; a mudança é confirmada com duas atualizações e uma margem de 2 m para evitar oscilações. “Simular caminhada” usa posições fictícias. O GPS só é solicitado ao tocar num dos botões de localização real.</small>
 <small class="warning">O mapa Google desta exportação não tem chave de API configurada. A seleção por proximidade funciona sem esse mapa.</small>
 </div></details>
-<script src="geo.js"></script><script src="test-ui.js"></script>
+<script src="geo.js?v=2"></script><script src="test-ui.js?v=2"></script>
 </body></html>

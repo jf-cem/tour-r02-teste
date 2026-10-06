@@ -2,13 +2,30 @@
 const frame = document.getElementById('tour');
 const statusBox = document.getElementById('status');
 const scenario = document.getElementById('scenario');
-const buttons = ['simulate', 'custom', 'gps', 'reset'].map(id => document.getElementById(id));
-let data, cases = [], revision = 0;
+const buttons = ['simulate', 'custom', 'gps', 'reset', 'route', 'follow'].map(id => document.getElementById(id));
+let data, cases = [], revision = 0, watchId = null, routeTimer = null;
+let lastError = '', permissionState = 'não disponível', diagnosticRevision = 0;
 function status(text) { statusBox.textContent = text; }
+async function diagnostics() {
+  const request = ++diagnosticRevision;
+  try { permissionState = (await navigator.permissions.query({name:'geolocation'})).state; } catch (_) { permissionState = 'não disponível neste navegador'; }
+  if (request !== diagnosticRevision) return;
+  const policy = document.permissionsPolicy || document.featurePolicy;
+  let allowed = 'não verificável';
+  try { allowed = policy ? (policy.allowsFeature('geolocation') ? 'permitida' : 'bloqueada') : allowed; } catch (_) {}
+  document.getElementById('diagnostics').textContent = `Versão: 2\nHTTPS: ${window.isSecureContext ? 'sim' : 'não'}\nAPI de localização: ${navigator.geolocation ? 'disponível' : 'indisponível'}\nPermissão reportada pelo navegador: ${permissionState}\nPolítica da página: ${allowed}\nPágina dentro de outra aplicação/frame: ${window.top !== window.self ? 'sim' : 'não'}\nÚltimo erro: ${lastError || 'nenhum'}\nNavegador: ${navigator.userAgent}`;
+}
+function stopTracking() {
+  revision++;
+  if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+  if (routeTimer !== null) clearInterval(routeTimer);
+  watchId = null; routeTimer = null;
+  document.getElementById('stop').disabled = true;
+}
 function openNode(id) {
   const player = frame.contentWindow.pano;
   if (!player || !player.getNodeIds().includes(id)) throw new Error('O tour ainda está a carregar. Tenta novamente.');
-  player.openNext('{' + id + '}', '');
+  if (player.getCurrentNode() !== id) player.openNext('{' + id + '}', '');
 }
 function usePosition(position, source, accuracy) {
   const best = TourGeo.nearest(position, data.nodes);
@@ -22,11 +39,11 @@ function usePosition(position, source, accuracy) {
   status(message);
 }
 document.getElementById('simulate').onclick = () => {
-  revision++;
+  stopTracking();
   try { usePosition(cases[Number(scenario.value)], 'Localização simulada'); } catch (e) { status(e.message); }
 };
 document.getElementById('custom').onclick = () => {
-  revision++;
+  stopTracking();
   try {
     const lat = document.getElementById('lat'), lng = document.getElementById('lng');
     if (!lat.value.trim() || !lng.value.trim()) throw new Error('Preenche a latitude e a longitude.');
@@ -34,24 +51,71 @@ document.getElementById('custom').onclick = () => {
   } catch (e) { status(e.message); }
 };
 document.getElementById('reset').onclick = () => {
-  revision++;
+  stopTracking();
   try { openNode(data.start); status('Tour aberto no ponto inicial.'); } catch(e) { status(e.message); }
 };
-document.getElementById('gps').onclick = () => {
-  const current = ++revision;
+function gpsError(error, current) {
+  if (current !== revision) return;
+  lastError = `Código ${error.code}: ${error.message || '(sem mensagem do navegador)'}`;
+  const retrying = watchId !== null && error.code !== 1;
+  if (!retrying) stopTracking();
+  const messages = {1:'O navegador bloqueou a localização (código 1). Isso também pode acontecer quando o acesso está bloqueado pelo sistema ou pela aplicação que abriu o link, mesmo com a permissão do site ativa.',2:'O navegador não conseguiu obter uma posição (código 2).',3:'Não chegou uma posição dentro do tempo de espera (código 3).'};
+  if (!retrying) { try { openNode(data.start); } catch (_) {} }
+  status((messages[error.code] || 'Não foi possível obter a localização.') + (retrying ? '\nO acompanhamento continua ativo, à espera de outra posição.' : '\nAbre “Diagnóstico de localização” e indica a permissão reportada e o último erro. Podes continuar com a caminhada simulada.'));
+  diagnostics();
+}
+function startGps(follow) {
+  stopTracking();
+  const current = revision;
+  lastError = ''; diagnostics();
   if (!window.isSecureContext) return status('A localização real precisa de HTTPS.');
   if (!navigator.geolocation) return status('Este navegador não suporta geolocalização.');
-  status('A obter a localização real. Autoriza o acesso no navegador.');
-  navigator.geolocation.getCurrentPosition(position => {
+  status(follow ? 'Acompanhamento iniciado. A aguardar a primeira posição do aparelho…' : 'A obter a localização real. Autoriza o acesso no navegador.');
+  const tracker = TourGeo.createTracker(data.nodes, data.start);
+  const success = position => {
     if (current !== revision) return;
-    try { usePosition({ lat: position.coords.latitude, lng: position.coords.longitude }, 'Localização real', position.coords.accuracy); } catch (e) { status(e.message); }
-  }, error => {
-    if (current !== revision) return;
-    const messages = { 1: 'Acesso à localização recusado.', 2: 'Localização indisponível.', 3: 'Tempo de espera pela localização esgotado.' };
-    try { openNode(data.start); } catch (_) {}
-    status((messages[error.code] || 'Não foi possível obter a localização.') + ' Tour mantido no ponto inicial. Podes continuar com uma posição simulada.');
-  }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
+    try {
+      const coords = {lat:position.coords.latitude, lng:position.coords.longitude};
+      if (follow) trackedPosition(tracker, coords, position.coords.accuracy, 'GPS em tempo real');
+      else usePosition(coords, 'Localização real', position.coords.accuracy);
+      diagnostics();
+    } catch (e) { status(e.message); }
+  };
+  const options = {enableHighAccuracy:true,timeout:25000,maximumAge:0};
+  if (follow) {
+    watchId = navigator.geolocation.watchPosition(success, error => gpsError(error,current), options);
+    document.getElementById('stop').disabled = false;
+  } else navigator.geolocation.getCurrentPosition(success, error => gpsError(error,current), options);
+}
+function trackedPosition(tracker, coords, accuracy, source) {
+  const decision = tracker(coords, accuracy);
+  if (decision.accepted) openNode(decision.id);
+  const node = data.nodes.find(n => n.id === decision.id);
+  status(`${source}\nMais próximo: ${decision.best.node.title} (${Math.round(decision.best.meters)} m).\nPrecisão: ±${Math.round(accuracy)} m.\n${decision.waiting || (decision.best.meters > 100 ? 'Fora da área. Tour no ponto inicial.' : 'Panorama: ' + node.title)}`);
+}
+document.getElementById('gps').onclick = () => startGps(false);
+document.getElementById('follow').onclick = () => startGps(true);
+document.getElementById('stop').onclick = () => { stopTracking(); status('Acompanhamento / simulação parado. Podes navegar livremente.'); };
+document.getElementById('route').onclick = () => {
+  stopTracking();
+  const tracker = TourGeo.createTracker(data.nodes, data.start);
+  const path = [data.nodes[0]];
+  for (let i=1;i<data.nodes.length;i++) {
+    const a=data.nodes[i-1], b=data.nodes[i];
+    for (let step=1;step<=4;step++) path.push({lat:a.lat+(b.lat-a.lat)*step/4,lng:a.lng+(b.lng-a.lng)*step/4});
+  }
+  path.push(data.nodes.at(-1));
+  let step=0;
+  const tick = () => {
+    try {
+      trackedPosition(tracker,path[step++],5,`Caminhada simulada · ${step}/${path.length}`);
+      if (step === path.length) { stopTracking(); status(statusBox.textContent + '\nCaminhada simulada concluída.'); }
+    } catch (e) { stopTracking(); status(e.message); }
+  };
+  tick(); routeTimer=setInterval(tick,750);
+  document.getElementById('stop').disabled=false;
 };
+window.addEventListener('pagehide',stopTracking);
 async function init() {
   try {
     const response = await fetch('nodes.json');
@@ -79,7 +143,8 @@ async function init() {
       }, 200);
     });
     scenario.disabled = false; buttons.forEach(button => button.disabled = false);
-    status(`${data.nodes.length} panoramas prontos. Escolhe uma posição e toca em “Testar posição simulada”.`);
+    status(`${data.nodes.length} panoramas prontos. Usa “Simular caminhada pela tour” para testar as mudanças automáticas.`);
   } catch (e) { status(e.message); }
 }
 init();
+diagnostics();
