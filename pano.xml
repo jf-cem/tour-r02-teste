@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tour apprev="22523" appversion="8.0" hassounds="0" start="node3">
+  <panorama id="node3">
+    <input height="2048" levelbias="0.400" levelbiashidpi="1.000" levelingpitch="0" levelingroll="0" leveltilesize="1022" leveltileurl="tiles/node3/cf_%c/l_%l/c_%x/tile_%y.jpg" overlap="1" width="2048">
+      <level height="2048" predecode="0" preload="0" width="2048"/>
+      <level height="1024" predecode="0" preload="0" width="1024"/>
+      <level height="512" predecode="1" preload="1" width="512"/>
+      <preview color="0x808080" strip="1"/>
+    </input>
+    <userdata altitude="0.00" author="" capturedatetime="2026-09-30T17:09:20" comment="" copyright="" customnodeid="" datetime="" description="" heading="294.4" hideinlist="0" info="" latitude="38.74869721" longitude="-9.20120518" nodeid="node3" source="" tags="R02" title="Panorama 01"/>
+    <view fovmode="2" pannorth="294.4">
+      <start fov="100" pan="-3.72486" projection="4" tilt="4.6778"/>
+      <flyin fov="170" pan="0" projection="9" tilt="-90"/>
+      <min fov="1" pan="0" tilt="-90"/>
+      <max fov="120" fovfisheye="360" fovstereographic="270" pan="360" scaletofit="0" tilt="90"/>
+    </view>
+    <hotspots>
+      <hotspot description="" distance="7.83203" id="Point03" pan="2.69" skinid="ht_node" target="$fwd" tilt="-3.71" title="Panorama 02" url="{node4}"/>
+    </hotspots>
+    <media/>
+    <animation animsequence="Animation01" clipsrandom="0" syncanimationwithvideo="0" useinautorotation="0"/>
+  </panorama>
+  <panorama id="node4">
+    <input height="2048" levelbias="0.400" levelbiashidpi="1.000" levelingpitch="0" levelingroll="0" leveltilesize="1022" leveltileurl="tiles/node4/cf_%c/l_%l/c_%x/tile_%y.jpg" overlap="1" width="2048">
+      <level height="2048" predecode="0" preload="0" width="2048"/>
+      <level height="1024" predecode="0" preload="0" width="1024"/>
+      <level height="512" predecode="1" preload="1" width="512"/>
+      <preview color="0x808080" strip="1"/>
+    </input>
+    <userdata altitude="0.00" author="" capturedatetime="2026-09-30T16:51:21" comment="" copyright="" customnodeid="" datetime="" description="" heading="288.117" hideinlist="0" info="" latitude="38.74872382" longitude="-9.20128880" nodeid="node4" source="" tags="R02" title="Panorama 02"/>
+    <view fovmode="2" pannorth="288.117">
+      <start fov="100" pan="-1.31493" projection="4" tilt="-0.418342"/>
+      <flyin fov="170" pan="0" projection="9" tilt="-90"/>
+      <min fov="1" pan="0" tilt="-90"/>
+      <max fov="120" fovfisheye="360" fovstereographic="270" pan="360" scaletofit="0" tilt="90"/>
+    </view>
+    <hotspots>
+      <hotspot description="" distance="7.83203" id="Point01" pan="-173.89" skinid="ht_node" target="$fwd" tilt="-1.45" title="Panorama 01" url="{node3}"/>
+      <hotspot description="" distance="10.5186" id="Point02" pan="4.91" skinid="ht_node" target="$fwd" tilt="-5.45" title="Panorama 03" url="{node5}"/>
+    </hotspots>
+    <media/>
+    <animation animsequence="Animation01" clipsrandom="0" syncanimationwithvideo="0" useinautorotation="0"/>
+  </panorama>
+  <panorama id="node5">
+    <input height="2048" levelbias="0.400" levelbiashidpi="1.000" levelingpitch="0" levelingroll="0" leveltilesize="1022" leveltileurl="tiles/node5/cf_%c/l_%l/c_%x/tile_%y.jpg" overlap="1" width="2048">
+      <level height="2048" predecode="0" preload="0" width="2048"/>
+      <level height="1024" predecode="0" preload="0" width="1024"/>
+      <level height="512" predecode="1" preload="1" width="512"/>
+      <preview color="0x808080" strip="1"/>
+    </input>
+    <userdata altitude="0.00" author="" capturedatetime="2026-09-30T16:38:04" comment="" copyright="" customnodeid="" datetime="" description="" heading="292.173" hideinlist="0" info="" latitude="38.74873891" longitude="-9.20140854" nodeid="node5" source="" tags="R02" title="Panorama 03"/>
+    <view fovmode="2" pannorth="292.173">
+      <start fov="100" pan="1.14215" projection="4" tilt="2.8101"/>
+      <flyin fov="170" pan="0" projection="9" tilt="-90"/>
+      <min fov="1" pan="0" tilt="-90"/>
+      <max fov="120" fovfisheye="360" fovstereographic="270" pan="360" scaletofit="0" tilt="90"/>
+    </view>
+    <hotspots>
+      <hotspot description="" distance="10.5186" id="Point01" pan="168.71" skinid="ht_node" target="$fwd" tilt="-2.98" title="Panorama 02" url="{node4}"/>
+      <hotspot description="" distance="11.2575" id="Point02" pan="8.29" skinid="ht_node" target="$fwd" tilt="-2.58" title="Panorama 04" url="{node6}"/>
+    </hotspots>
+    <media/>
+    <animation animsequence="Animation01" clipsrandom="0" syncanimationwithvideo="0" useinautorotation="0"/>
+  </panorama>
+  <panorama id="node6">
+    <input height="2048" levelbias="0.400" levelbiashidpi="1.000" levelingpitch="0" levelingroll="0" leveltilesize="1022" leveltileurl="tiles/node6/cf_%c/l_%l/c_%x/tile_%y.jpg" overlap="1" width="2048">
+      <level height="2048" predecode="0" preload="0" width="2048"/>
+      <level height="1024" predecode="0" preload="0" width="1024"/>
+      <level height="512" predecode="1" preload="1" width="512"/>
+      <preview color="0x808080" strip="1"/>
+    </input>
+    <userdata altitude="0.00" author="" capturedatetime="2026-09-30T16:45:07" comment="" copyright="" customnodeid="" datetime="" description="" heading="290.148" hideinlist="0" info="" latitude="38.74876650" longitude="-9.20153344" nodeid="node6" source="" tags="R02" title="Panorama 04"/>
+    <view fovmode="2" pannorth="290.148">
+      <start fov="100" pan="-18.8898" projection="4" tilt="-3.74528"/>
+      <flyin fov="170" pan="0" projection="9" tilt="-90"/>
+      <min fov="1" pan="0" tilt="-90"/>
+      <max fov="120" fovfisheye="360" fovstereographic="270" pan="360" scaletofit="0" tilt="90"/>
+    </view>
+    <hotspots>
+      <hotspot description="" distance="11.2575" id="Point01" pan="-175.666" skinid="ht_node" target="$fwd" tilt="0" title="Panorama 03" url="{node5}"/>
+      <hotspot description="" distance="5.6565" id="Point02" pan="2.61001" skinid="ht_node" target="$fwd" tilt="-7.51" title="Panorama 05" url="{node7}"/>
+    </hotspots>
+    <media/>
+    <animation animsequence="Animation01" clipsrandom="0" syncanimationwithvideo="0" useinautorotation="0"/>
+  </panorama>
+  <panorama id="node7">
+    <input height="2048" levelbias="0.400" levelbiashidpi="1.000" levelingpitch="0" levelingroll="0" leveltilesize="1022" leveltileurl="tiles/node7/cf_%c/l_%l/c_%x/tile_%y.jpg" overlap="1" width="2048">
+      <level height="2048" predecode="0" preload="0" width="2048"/>
+      <level height="1024" predecode="0" preload="0" width="1024"/>
+      <level height="512" predecode="1" preload="1" width="512"/>
+      <preview color="0x808080" strip="1"/>
+    </input>
+    <userdata altitude="0.00" author="" capturedatetime="2026-09-30T16:26:58" comment="" copyright="" customnodeid="" datetime="" description="" heading="288.603" hideinlist="0" info="" latitude="38.74878482" longitude="-9.20159429" nodeid="node7" source="" tags="R02" title="Panorama 05"/>
+    <view fovmode="2" pannorth="288.603">
+      <start fov="100" pan="-28.7187" projection="4" tilt="0.981716"/>
+      <flyin fov="170" pan="0" projection="9" tilt="-90"/>
+      <min fov="1" pan="0" tilt="-90"/>
+      <max fov="120" fovfisheye="360" fovstereographic="270" pan="360" scaletofit="0" tilt="90"/>
+    </view>
+    <hotspots>
+      <hotspot description="" distance="5.6565" id="Point01" pan="177.495" skinid="ht_node" target="$fwd" tilt="0" title="Panorama 04" url="{node6}"/>
+      <hotspot description="" distance="4.5258" id="Point02" pan="0.479995" skinid="ht_node" target="$fwd" tilt="-3.71" title="Panorama 06" url="{node8}"/>
+    </hotspots>
+    <media/>
+    <animation animsequence="Animation01" clipsrandom="0" syncanimationwithvideo="0" useinautorotation="0"/>
+  </panorama>
+  <panorama id="node8">
+    <input height="2048" levelbias="0.400" levelbiashidpi="1.000" levelingpitch="0" levelingroll="0" leveltilesize="1022" leveltileurl="tiles/node8/cf_%c/l_%l/c_%x/tile_%y.jpg" overlap="1" width="2048">
+      <level height="2048" predecode="0" preload="0" width="2048"/>
+      <level height="1024" predecode="0" preload="0" width="1024"/>
+      <level height="512" predecode="1" preload="1" width="512"/>
+      <preview color="0x808080" strip="1"/>
+    </input>
+    <userdata altitude="0.00" author="" capturedatetime="2026-09-30T16:18:13" comment="" copyright="" customnodeid="" datetime="" description="" heading="287.003" hideinlist="0" info="" latitude="38.74879857" longitude="-9.20164341" nodeid="node8" source="" tags="R02" title="Panorama 06"/>
+    <view fovmode="2" pannorth="287.003">
+      <start fov="100" pan="-12.5766" projection="4" tilt="1.14867"/>
+      <flyin fov="170" pan="0" projection="9" tilt="-90"/>
+      <min fov="1" pan="0" tilt="-90"/>
+      <max fov="120" fovfisheye="360" fovstereographic="270" pan="360" scaletofit="0" tilt="90"/>
+    </view>
+    <hotspots>
+      <hotspot description="" distance="4.5258" id="Point01" pan="177.259" skinid="ht_node" target="$fwd" tilt="0" title="Panorama 05" url="{node7}"/>
+      <hotspot description="" distance="2.73249" id="Point02" pan="4.29" skinid="ht_node" target="$fwd" tilt="-5.3" title="Panorama 07" url="{node10}"/>
+    </hotspots>
+    <media/>
+    <animation animsequence="Animation01" clipsrandom="0" syncanimationwithvideo="0" useinautorotation="0"/>
+  </panorama>
+  <panorama id="node10">
+    <input height="2048" levelbias="0.400" levelbiashidpi="1.000" levelingpitch="0" levelingroll="0" leveltilesize="1022" leveltileurl="tiles/node10/cf_%c/l_%l/c_%x/tile_%y.jpg" overlap="1" width="2048">
+      <level height="2048" predecode="0" preload="0" width="2048"/>
+      <level height="1024" predecode="0" preload="0" width="1024"/>
+      <level height="512" predecode="1" preload="1" width="512"/>
+      <preview color="0x808080" strip="1"/>
+    </input>
+    <userdata altitude="0.00" author="" capturedatetime="2026-09-30T16:11:19" comment="" copyright="" customnodeid="" datetime="" description="" heading="297.389" hideinlist="0" info="" latitude="38.74880417" longitude="-9.20167409" nodeid="node10" source="" tags="R02" title="Panorama 07"/>
+    <view fovmode="2" pannorth="297.389">
+      <start fov="100" pan="-23.4948" projection="4" tilt="0.689188"/>
+      <flyin fov="170" pan="0" projection="9" tilt="-90"/>
+      <min fov="1" pan="0" tilt="-90"/>
+      <max fov="120" fovfisheye="360" fovstereographic="270" pan="360" scaletofit="0" tilt="90"/>
+    </view>
+    <hotspots>
+      <hotspot description="" distance="2.73249" id="Point01" pan="174.71" skinid="ht_node" target="$fwd" tilt="-1.6" title="Panorama 06" url="{node8}"/>
+      <hotspot description="" distance="3.12866" id="Point03" pan="5.95" skinid="ht_node" target="$fwd" tilt="-7.96" title="Panorama 08" url="{node9}"/>
+    </hotspots>
+    <media/>
+    <animation animsequence="Animation01" clipsrandom="0" syncanimationwithvideo="0" useinautorotation="0"/>
+  </panorama>
+  <panorama id="node9">
+    <input height="2048" levelbias="0.400" levelbiashidpi="1.000" levelingpitch="0" levelingroll="0" leveltilesize="1022" leveltileurl="tiles/node9/cf_%c/l_%l/c_%x/tile_%y.jpg" overlap="1" width="2048">
+      <level height="2048" predecode="0" preload="0" width="2048"/>
+      <level height="1024" predecode="0" preload="0" width="1024"/>
+      <level height="512" predecode="1" preload="1" width="512"/>
+      <preview color="0x808080" strip="1"/>
+    </input>
+    <userdata altitude="0.00" author="" capturedatetime="2026-09-30T16:05:31" comment="" copyright="" customnodeid="" datetime="" description="" heading="286.387" hideinlist="0" info="" latitude="38.74881206" longitude="-9.20170872" nodeid="node9" source="" tags="R02" title="Panorama 08"/>
+    <view fovmode="2" pannorth="286.387">
+      <start fov="100" pan="-55.9578" projection="4" tilt="-4.185"/>
+      <flyin fov="170" pan="0" projection="9" tilt="-90"/>
+      <min fov="1" pan="0" tilt="-90"/>
+      <max fov="120" fovfisheye="360" fovstereographic="270" pan="360" scaletofit="0" tilt="90"/>
+    </view>
+    <hotspots>
+      <hotspot description="" distance="3.12866" id="Point01" pan="-179.898" skinid="ht_node" target="$fwd" tilt="0" title="Panorama 07" url="{node10}"/>
+      <hotspot description="" distance="7.00321" id="Point02" pan="-56.88" skinid="ht_node" target="$fwd" tilt="-8.64" title="Panorama 09" url="{node11}"/>
+    </hotspots>
+    <media/>
+    <animation animsequence="Animation01" clipsrandom="0" syncanimationwithvideo="0" useinautorotation="0"/>
+  </panorama>
+  <panorama id="node11">
+    <input height="2048" levelbias="0.400" levelbiashidpi="1.000" levelingpitch="0" levelingroll="0" leveltilesize="1022" leveltileurl="tiles/node11/cf_%c/l_%l/c_%x/tile_%y.jpg" overlap="1" width="2048">
+      <level height="2048" predecode="0" preload="0" width="2048"/>
+      <level height="1024" predecode="0" preload="0" width="1024"/>
+      <level height="512" predecode="1" preload="1" width="512"/>
+      <preview color="0x808080" strip="1"/>
+    </input>
+    <userdata altitude="0.00" author="" capturedatetime="2026-09-30T15:58:58" comment="" copyright="" customnodeid="" datetime="" description="" heading="284.725" hideinlist="0" info="" latitude="38.74887257" longitude="-9.20173112" nodeid="node11" source="" tags="R02" title="Panorama 09"/>
+    <view fovmode="2" pannorth="284.725">
+      <start fov="100" pan="21.1469" projection="4" tilt="-3.66579"/>
+      <flyin fov="170" pan="0" projection="9" tilt="-90"/>
+      <min fov="1" pan="0" tilt="-90"/>
+      <max fov="120" fovfisheye="360" fovstereographic="270" pan="360" scaletofit="0" tilt="90"/>
+    </view>
+    <hotspots>
+      <hotspot description="" distance="7.00321" id="Point02" pan="155.1" skinid="ht_node" target="$fwd" tilt="-3.77" title="Panorama 08" url="{node9}"/>
+      <hotspot description="" distance="7.65884" id="Point01" pan="16.02" skinid="ht_node" target="$fwd" tilt="-4" title="Panorama 10" url="{node14}"/>
+    </hotspots>
+    <media/>
+    <animation animsequence="Animation01" clipsrandom="0" syncanimationwithvideo="0" useinautorotation="0"/>
+  </panorama>
+  <panorama id="node14">
+    <input height="2048" levelbias="0.400" levelbiashidpi="1.000" levelingpitch="0" levelingroll="0" leveltilesize="1022" leveltileurl="tiles/node14/cf_%c/l_%l/c_%x/tile_%y.jpg" overlap="1" width="2048">
+      <level height="2048" predecode="0" preload="0" width="2048"/>
+      <level height="1024" predecode="0" preload="0" width="1024"/>
+      <level height="512" predecode="1" preload="1" width="512"/>
+      <preview color="0x808080" strip="1"/>
+    </input>
+    <userdata altitude="0.00" author="" capturedatetime="2026-09-30T15:53:55" comment="" copyright="" customnodeid="" datetime="" description="" heading="120.928" hideinlist="0" info="" latitude="38.74885856" longitude="-9.20181759" nodeid="node14" source="" tags="R02" title="Panorama 10"/>
+    <view fovmode="2" pannorth="120.928">
+      <start fov="136.926" pan="3.33152" projection="4" tilt="2.25735"/>
+      <flyin fov="170" pan="0" projection="9" tilt="-90"/>
+      <min fov="1" pan="0" tilt="-90"/>
+      <max fov="120" fovfisheye="360" fovstereographic="270" pan="360" scaletofit="0" tilt="90"/>
+    </view>
+    <hotspots>
+      <hotspot description="" distance="5.66076" id="Point03" pan="174.61" skinid="ht_node" target="$fwd" tilt="-15.19" title="Panorama 14" url="{node12}"/>
+      <hotspot description="" distance="7.65884" id="Point01" pan="67.82" skinid="ht_node" target="$fwd" tilt="-7.28" title="Panorama 09" url="{node11}"/>
+      <hotspot description="" distance="3.25062" id="Point02" pan="-6.33" skinid="ht_node" target="$fwd" tilt="-3.59" title="Panorama 11" url="{node15}"/>
+    </hotspots>
+    <media/>
+    <animation animsequence="Animation01" clipsrandom="0" syncanimationwithvideo="0" useinautorotation="0"/>
+  </panorama>
+  <panorama id="node15">
+    <input height="2048" levelbias="0.400" levelbiashidpi="1.000" levelingpitch="0" levelingroll="0" leveltilesize="1022" leveltileurl="tiles/node15/cf_%c/l_%l/c_%x/tile_%y.jpg" overlap="1" width="2048">
+      <level height="2048" predecode="0" preload="0" width="2048"/>
+      <level height="1024" predecode="0" preload="0" width="1024"/>
+      <level height="512" predecode="1" preload="1" width="512"/>
+      <preview color="0x808080" strip="1"/>
+    </input>
+    <userdata altitude="0.00" author="" capturedatetime="2026-09-30T15:30:44" comment="" copyright="" customnodeid="" datetime="" description="" heading="50.249" hideinlist="0" info="" latitude="38.74882947" longitude="-9.20181388" nodeid="node15" source="" tags="R02" title="Panorama 11"/>
+    <view fovmode="2" pannorth="50.249">
+      <start fov="100" pan="-125.762" projection="4" tilt="0.62915"/>
+      <flyin fov="170" pan="0" projection="9" tilt="-90"/>
+      <min fov="1" pan="0" tilt="-90"/>
+      <max fov="120" fovfisheye="360" fovstereographic="270" pan="360" scaletofit="0" tilt="90"/>
+    </view>
+    <hotspots>
+      <hotspot description="" distance="3.25062" id="Point02" pan="130.67" skinid="ht_node" target="$fwd" tilt="-9.93" title="Panorama 10" url="{node14}"/>
+      <hotspot description="" distance="3.60432" id="Point01" pan="-84.77" skinid="ht_node" target="$fwd" tilt="-4.96" title="Panorama 12" url="{node16}"/>
+      <hotspot description="" distance="4.94964" id="Point03" pan="-28.5063" skinid="ht_node" target="$fwd" tilt="0" title="Panorama 13" url="{node17}"/>
+    </hotspots>
+    <media/>
+    <animation animsequence="Animation01" clipsrandom="0" syncanimationwithvideo="0" useinautorotation="0"/>
+  </panorama>
+  <panorama id="node16">
+    <input height="2048" levelbias="0.400" levelbiashidpi="1.000" levelingpitch="0" levelingroll="0" leveltilesize="1022" leveltileurl="tiles/node16/cf_%c/l_%l/c_%x/tile_%y.jpg" overlap="1" width="2048">
+      <level height="2048" predecode="0" preload="0" width="2048"/>
+      <level height="1024" predecode="0" preload="0" width="1024"/>
+      <level height="512" predecode="1" preload="1" width="512"/>
+      <preview color="0x808080" strip="1"/>
+    </input>
+    <userdata altitude="0.00" author="" capturedatetime="2026-09-30T15:18:21" comment="" copyright="" customnodeid="" datetime="" description="" heading="44.768" hideinlist="0" info="" latitude="38.74881953" longitude="-9.20177432" nodeid="node16" source="" tags="R02" title="Panorama 12"/>
+    <view fovmode="2" pannorth="44.768">
+      <start fov="100" pan="0.274613" projection="4" tilt="-5.76819"/>
+      <flyin fov="170" pan="0" projection="9" tilt="-90"/>
+      <min fov="1" pan="0" tilt="-90"/>
+      <max fov="120" fovfisheye="360" fovstereographic="270" pan="360" scaletofit="0" tilt="90"/>
+    </view>
+    <hotspots>
+      <hotspot description="" distance="3.60432" id="Point01" pan="98.79" skinid="ht_node" target="$fwd" tilt="-2.77" title="Panorama 11" url="{node15}"/>
+      <hotspot description="" distance="2.51285" id="Point02" pan="19.73" skinid="ht_node" target="$fwd" tilt="-1.27" title="Panorama 13" url="{node17}"/>
+    </hotspots>
+    <media/>
+    <animation animsequence="Animation01" clipsrandom="0" syncanimationwithvideo="0" useinautorotation="0"/>
+  </panorama>
+  <panorama id="node17">
+    <input height="2048" levelbias="0.400" levelbiashidpi="1.000" levelingpitch="0" levelingroll="0" leveltilesize="1022" leveltileurl="tiles/node17/cf_%c/l_%l/c_%x/tile_%y.jpg" overlap="1" width="2048">
+      <level height="2048" predecode="0" preload="0" width="2048"/>
+      <level height="1024" predecode="0" preload="0" width="1024"/>
+      <level height="512" predecode="1" preload="1" width="512"/>
+      <preview color="0x808080" strip="1"/>
+    </input>
+    <userdata altitude="0.00" author="" capturedatetime="2026-09-30T14:54:38" comment="" copyright="" customnodeid="" datetime="" description="" heading="289.394" hideinlist="0" info="" latitude="38.74883815" longitude="-9.20175790" nodeid="node17" source="" tags="R02" title="Panorama 13"/>
+    <view fovmode="2" pannorth="289.394">
+      <start fov="100" pan="4.30255" projection="4" tilt="-3.23716"/>
+      <flyin fov="170" pan="0" projection="9" tilt="-90"/>
+      <min fov="1" pan="0" tilt="-90"/>
+      <max fov="120" fovfisheye="360" fovstereographic="270" pan="360" scaletofit="0" tilt="90"/>
+    </view>
+    <hotspots>
+      <hotspot description="" distance="2.51285" id="Point01" pan="101.18" skinid="ht_node" target="$fwd" tilt="-3.3" title="Panorama 12" url="{node16}"/>
+      <hotspot description="" distance="4.94964" id="Point02" pan="24.9" skinid="ht_node" target="$fwd" tilt="-4.71" title="Panorama 11" url="{node15}"/>
+    </hotspots>
+    <media/>
+    <animation animsequence="Animation01" clipsrandom="0" syncanimationwithvideo="0" useinautorotation="0"/>
+  </panorama>
+  <panorama id="node12">
+    <input height="2048" levelbias="0.400" levelbiashidpi="1.000" levelingpitch="0" levelingroll="0" leveltilesize="1022" leveltileurl="tiles/node12/cf_%c/l_%l/c_%x/tile_%y.jpg" overlap="1" width="2048">
+      <level height="2048" predecode="0" preload="0" width="2048"/>
+      <level height="1024" predecode="0" preload="0" width="1024"/>
+      <level height="512" predecode="1" preload="1" width="512"/>
+      <preview color="0x808080" strip="1"/>
+    </input>
+    <userdata altitude="0.00" author="" capturedatetime="2026-09-30T15:45:00" comment="" copyright="" customnodeid="" datetime="" description="" heading="301.627" hideinlist="0" info="" latitude="38.74884957" longitude="-9.20188184" nodeid="node12" source="" tags="R02" title="Panorama 14"/>
+    <view fovmode="2" pannorth="301.627">
+      <start fov="100" pan="-101.18" projection="4" tilt="-26.5863"/>
+      <flyin fov="170" pan="0" projection="9" tilt="-90"/>
+      <min fov="1" pan="0" tilt="-90"/>
+      <max fov="120" fovfisheye="360" fovstereographic="270" pan="360" scaletofit="0" tilt="90"/>
+    </view>
+    <hotspots>
+      <hotspot description="" distance="5.66076" id="Point01" pan="-165.73" skinid="ht_node" target="$fwd" tilt="-8.79" title="Panorama 10" url="{node14}"/>
+      <hotspot description="" distance="3.66695" id="Point02" pan="-90.18" skinid="ht_node" target="$fwd" tilt="-19.84" title="Panorama 15" url="{node13}"/>
+    </hotspots>
+    <media/>
+    <animation animsequence="Animation01" clipsrandom="0" syncanimationwithvideo="0" useinautorotation="0"/>
+  </panorama>
+  <panorama id="node13">
+    <input height="2048" levelbias="0.400" levelbiashidpi="1.000" levelingpitch="0" levelingroll="0" leveltilesize="1022" leveltileurl="tiles/node13/cf_%c/l_%l/c_%x/tile_%y.jpg" overlap="1" width="2048">
+      <level height="2048" predecode="0" preload="0" width="2048"/>
+      <level height="1024" predecode="0" preload="0" width="1024"/>
+      <level height="512" predecode="1" preload="1" width="512"/>
+      <preview color="0x808080" strip="1"/>
+    </input>
+    <userdata altitude="0.00" author="" capturedatetime="2026-09-30T15:36:01" comment="" copyright="" customnodeid="" datetime="" description="" heading="7.503" hideinlist="0" info="" latitude="38.74887937" longitude="-9.20186373" nodeid="node13" source="" tags="R02" title="Panorama 15"/>
+    <view fovmode="2" pannorth="7.503">
+      <start fov="100" pan="51.7756" projection="4" tilt="-34.5"/>
+      <flyin fov="170" pan="0" projection="9" tilt="-90"/>
+      <min fov="1" pan="0" tilt="-90"/>
+      <max fov="120" fovfisheye="360" fovstereographic="270" pan="360" scaletofit="0" tilt="90"/>
+    </view>
+    <hotspots>
+      <hotspot description="" distance="3.66695" id="Point01" pan="-178.14" skinid="ht_node" target="$fwd" tilt="-0.27" title="Panorama 14" url="{node12}"/>
+    </hotspots>
+    <media/>
+    <animation animsequence="Animation01" clipsrandom="0" syncanimationwithvideo="0" useinautorotation="0"/>
+  </panorama>
+  <masternode>
+    <userdata author="" comment="" copyright="" description="" tags="" title="" uuid="{50beb484-ffb0-442c-8410-37f7cc873aac}"/>
+    <transition blendcolor="0x000000" blendtime="1" delay="none" enabled="1" softedge="0" type="crossdissolve" zoomafterinfov="140" zoomafteroutfov="40" zoomfov="40" zoomin="0" zoomout="0" zoomoutpause="1" zoomspeed="2"/>
+    <control contextfullscreen="1" contextprojections="0" contextvr="1" dblclickfullscreen="0" hideabout="0" invertcontrol="1" invertwheel="0" lockedkeyboard="0" lockedkeyboardzoom="0" lockedmouse="0" lockedwheel="0" rubberband="0" sensitivity="8" simulatemass="1" speedwheel="1" zoomcentercursor="1"/>
+    <animationsequences>
+      <sequence title="Animation01"/>
+    </animationsequences>
+    <hotspots smoothmovement="0">
+      <label background="1" backgroundalpha="1" backgroundcolor="0xffffff" border="1" borderalpha="1" bordercolor="0x000000" borderradius="1" enabled="1" height="20" textalpha="1" textcolor="0x000000" width="180" wordwrap="1"/>
+      <polystyle backgroundalpha="0.25098" backgroundcolor="0x0000ff" borderalpha="1" bordercolor="0x0000ff" handcursor="1" mode="0"/>
+    </hotspots>
+  </masternode>
+  <map googlecustomstylecode="" id="Map01" index="0" mapmaxzoom="18" mapprovider="googlemap" mapstyle="satellite" mapurltemplate="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" title="" type="web"/>
+  <map googlecustomstylecode="" id="Mapa" index="1" mapmaxzoom="18" mapprovider="googlemap" mapstyle="satellite" mapurltemplate="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" title="" type="web"/>
+</tour>
