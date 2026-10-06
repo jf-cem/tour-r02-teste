@@ -13,7 +13,7 @@ async function diagnostics() {
   const policy = document.permissionsPolicy || document.featurePolicy;
   let allowed = 'não verificável';
   try { allowed = policy ? (policy.allowsFeature('geolocation') ? 'permitida' : 'bloqueada') : allowed; } catch (_) {}
-  document.getElementById('diagnostics').textContent = `Versão: 2\nHTTPS: ${window.isSecureContext ? 'sim' : 'não'}\nAPI de localização: ${navigator.geolocation ? 'disponível' : 'indisponível'}\nPermissão reportada pelo navegador: ${permissionState}\nPolítica da página: ${allowed}\nPágina dentro de outra aplicação/frame: ${window.top !== window.self ? 'sim' : 'não'}\nÚltimo erro: ${lastError || 'nenhum'}\nNavegador: ${navigator.userAgent}`;
+  document.getElementById('diagnostics').textContent = `Versão: 3\nHTTPS: ${window.isSecureContext ? 'sim' : 'não'}\nAPI de localização: ${navigator.geolocation ? 'disponível' : 'indisponível'}\nPermissão reportada pelo navegador: ${permissionState}\nPolítica da página: ${allowed}\nPágina dentro de outra aplicação/frame: ${window.top !== window.self ? 'sim' : 'não'}\nÚltimo erro: ${lastError || 'nenhum'}\nNavegador: ${navigator.userAgent}`;
 }
 function stopTracking() {
   revision++;
@@ -72,12 +72,40 @@ function startGps(follow) {
   if (!navigator.geolocation) return status('Este navegador não suporta geolocalização.');
   status(follow ? 'Acompanhamento iniciado. A aguardar a primeira posição do aparelho…' : 'A obter a localização real. Autoriza o acesso no navegador.');
   const tracker = TourGeo.createTracker(data.nodes, data.start);
+  const relative = document.getElementById('gps-mode').value === 'relative';
+  const align = document.getElementById('align').checked;
+  const first = data.nodes.find(n=>n.id===data.start);
+  const next = data.nodes[data.nodes.indexOf(first)+1];
+  let origin = null, rotation = align ? null : 0;
   const success = position => {
     if (current !== revision) return;
     try {
       const coords = {lat:position.coords.latitude, lng:position.coords.longitude};
-      if (follow) trackedPosition(tracker, coords, position.coords.accuracy, 'GPS em tempo real');
-      else usePosition(coords, 'Localização real', position.coords.accuracy);
+      if (follow && relative) {
+        const accuracy=position.coords.accuracy;
+        if (!Number.isFinite(accuracy) || accuracy>20) {
+          status(`Teste com GPS relativo\nPrecisão: ±${Math.round(accuracy)} m.\nPrecisão insuficiente (mais de 20 m). A aguardar uma posição melhor.`);
+          return;
+        }
+        if (!origin) {
+          origin={...coords}; openNode(first.id);
+          trackedPosition(tracker,first,accuracy,'Teste com GPS relativo · origem guardada como P01');
+          if (align) status(statusBox.textContent+'\nCaminha cerca de 8 m numa direção para alinhar P01 → P02.');
+          return;
+        }
+        const traveled=TourGeo.distance(origin,coords);
+        if (rotation===null) {
+          if (traveled<8) {status(`Teste com GPS relativo · origem guardada como P01\nDeslocamento desde o início: ${traveled.toFixed(1)} m.\nA alinhar a direção: caminha até cerca de 8 m numa direção.\nPrecisão: ±${Math.round(accuracy)} m.`);return;}
+          rotation=TourGeo.bearing(first,next)-TourGeo.bearing(origin,coords);
+        }
+        const virtual=TourGeo.relativePosition(origin,coords,first,rotation);
+        trackedPosition(tracker,virtual,accuracy,'Teste com GPS relativo · direção alinhada');
+        status(statusBox.textContent+`\nDeslocamento desde o início: ${traveled.toFixed(1)} m.`);
+      } else if (follow) trackedPosition(tracker, coords, position.coords.accuracy, 'GPS em tempo real');
+      else if (relative) {
+        openNode(first.id);
+        status(`GPS obtido. Precisão: ±${Math.round(position.coords.accuracy)} m.\nToca em “Acompanhar localização em tempo real” para guardar a tua posição como P01 e iniciar o teste aqui.`);
+      } else usePosition(coords, 'Localização real', position.coords.accuracy);
       diagnostics();
     } catch (e) { status(e.message); }
   };
@@ -95,6 +123,15 @@ function trackedPosition(tracker, coords, accuracy, source) {
 }
 document.getElementById('gps').onclick = () => startGps(false);
 document.getElementById('follow').onclick = () => startGps(true);
+function modeChanged() {
+  stopTracking();
+  const relative=document.getElementById('gps-mode').value==='relative';
+  document.getElementById('align-label').hidden=!relative;
+  document.getElementById('relative-help').hidden=!relative;
+  status(relative ? 'Teste aqui: ao iniciar, a tua posição passa a ser P01.' : 'Modo no local real: o GPS é comparado com as coordenadas originais da tour.');
+}
+document.getElementById('gps-mode').onchange=modeChanged;
+document.getElementById('align').onchange=modeChanged;
 document.getElementById('stop').onclick = () => { stopTracking(); status('Acompanhamento / simulação parado. Podes navegar livremente.'); };
 document.getElementById('route').onclick = () => {
   stopTracking();
