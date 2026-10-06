@@ -22,13 +22,14 @@ async function diagnostics() {
   const policy = document.permissionsPolicy || document.featurePolicy;
   let allowed = 'não verificável';
   try { allowed = policy ? (policy.allowsFeature('geolocation') ? 'permitida' : 'bloqueada') : allowed; } catch (_) {}
-  document.getElementById('diagnostics').textContent = `Versão: 4\nHTTPS: ${window.isSecureContext ? 'sim' : 'não'}\nAPI de localização: ${navigator.geolocation ? 'disponível' : 'indisponível'}\nPermissão reportada pelo navegador: ${permissionState}\nPolítica da página: ${allowed}\nPágina dentro de outra aplicação/frame: ${window.top !== window.self ? 'sim' : 'não'}\nÚltimo erro: ${lastError || 'nenhum'}\nNavegador: ${navigator.userAgent}`;
+  document.getElementById('diagnostics').textContent = `Versão: 5\nHTTPS: ${window.isSecureContext ? 'sim' : 'não'}\nAPI de localização: ${navigator.geolocation ? 'disponível' : 'indisponível'}\nPermissão reportada pelo navegador: ${permissionState}\nPolítica da página: ${allowed}\nPágina dentro de outra aplicação/frame: ${window.top !== window.self ? 'sim' : 'não'}\nÚltimo erro: ${lastError || 'nenhum'}\nNavegador: ${navigator.userAgent}`;
 }
 function stopTracking() {
   revision++;
   if (watchId !== null) navigator.geolocation.clearWatch(watchId);
   if (routeTimer !== null) clearInterval(routeTimer);
   watchId = null; routeTimer = null;
+  window.TourMap?.pause();
   document.getElementById('stop').disabled = true;
   document.getElementById('stop').hidden = true;
   document.getElementById('follow').disabled=!ready;
@@ -40,11 +41,14 @@ function openNode(id) {
   if (player.getCurrentNode() !== id) player.openNext('{' + id + '}', '');
   const node=data.nodes.find(n=>n.id===id);
   if (node) document.getElementById('current-label').textContent=node.title;
+  window.TourMap?.setActive(id);
 }
 function usePosition(position, source, accuracy) {
   const best = TourGeo.nearest(position, data.nodes);
   const outside = best.meters > 100;
   openNode(outside ? data.start : best.node.id);
+  window.TourMap?.reset();
+  window.TourMap?.update(position,accuracy,source!=='Localização real');
   const coordText = `${position.lat.toFixed(7)}, ${position.lng.toFixed(7)}`;
   let message = `${source}: ${coordText}\nMais próximo: ${best.node.title} (${Math.round(best.meters)} m).\n`;
   message += outside ? 'Fora da área de teste. Tour aberto no ponto inicial.' : `Tour aberto em ${best.node.title}.`;
@@ -66,7 +70,7 @@ document.getElementById('custom').onclick = () => {
 };
 document.getElementById('reset').onclick = () => {
   stopTracking();
-  try { openNode(data.start); status('Tour aberto no ponto inicial.','Estás na primeira imagem. Podes começar uma nova caminhada.'); } catch(e) { status(e.message); }
+  try { window.TourMap?.reset(); openNode(data.start); status('Tour aberto no ponto inicial.','Estás na primeira imagem. Podes começar uma nova caminhada.'); } catch(e) { status(e.message); }
 };
 function gpsError(error, current) {
   if (current !== revision) return;
@@ -91,6 +95,7 @@ function startGps(follow) {
   const first = data.nodes.find(n=>n.id===data.start);
   const next = data.nodes[data.nodes.indexOf(first)+1];
   let origin = null, rotation = align ? null : 0;
+  window.TourMap?.reset();
   const success = position => {
     if (current !== revision) return;
     try {
@@ -109,7 +114,10 @@ function startGps(follow) {
         }
         const traveled=TourGeo.distance(origin,coords);
         if (rotation===null) {
-          if (traveled<8) {status(`Teste com GPS relativo · origem guardada como P01\nDeslocamento desde o início: ${traveled.toFixed(1)} m.\nA alinhar a direção: caminha até cerca de 8 m numa direção.\nPrecisão: ±${Math.round(accuracy)} m.`,`Continua em linha reta para definir a direção. Faltam cerca de ${Math.ceil(8-traveled)} metros.`);return;}
+          if (traveled<8) {
+            window.TourMap?.update(TourGeo.destination(first,traveled,TourGeo.bearing(first,next)),accuracy,true);
+            status(`Teste com GPS relativo · origem guardada como P01\nDeslocamento desde o início: ${traveled.toFixed(1)} m.\nA alinhar a direção: caminha até cerca de 8 m numa direção.\nPrecisão: ±${Math.round(accuracy)} m.`,`Continua em linha reta para definir a direção. Faltam cerca de ${Math.ceil(8-traveled)} metros.`);return;
+          }
           rotation=TourGeo.bearing(first,next)-TourGeo.bearing(origin,coords);
         }
         const virtual=TourGeo.relativePosition(origin,coords,first,rotation);
@@ -118,6 +126,7 @@ function startGps(follow) {
       } else if (follow) trackedPosition(tracker, coords, position.coords.accuracy, 'GPS em tempo real');
       else if (relative) {
         openNode(first.id);
+        window.TourMap?.update(first,position.coords.accuracy,true);
         status(`GPS obtido. Precisão: ±${Math.round(position.coords.accuracy)} m.\nToca em “Começar caminhada” para guardar a tua posição como P01 e iniciar o teste aqui.`,'A tua localização está disponível. Toca em “Começar caminhada” para iniciar.');
       } else usePosition(coords, 'Localização real', position.coords.accuracy);
       diagnostics();
@@ -132,6 +141,7 @@ function startGps(follow) {
 function trackedPosition(tracker, coords, accuracy, source) {
   const decision = tracker(coords, accuracy);
   if (decision.accepted) openNode(decision.id);
+  if (decision.accepted) window.TourMap?.update(coords,accuracy,source!=='GPS em tempo real');
   const node = data.nodes.find(n => n.id === decision.id);
   let friendly=`Estás em ${node.title}. Continua a caminhar; as imagens mudam automaticamente.`;
   if (!decision.accepted) friendly='O sinal de localização ainda é pouco preciso. Aguarda um momento, de preferência ao ar livre.';
@@ -143,6 +153,7 @@ document.getElementById('gps').onclick = () => startGps(false);
 document.getElementById('follow').onclick = () => startGps(true);
 function modeChanged() {
   stopTracking();
+  window.TourMap?.reset();
   const relative=document.getElementById('gps-mode').value==='relative';
   document.getElementById('align-label').hidden=!relative;
   document.getElementById('relative-help').hidden=!relative;
@@ -154,6 +165,7 @@ document.getElementById('align').onchange=modeChanged;
 document.getElementById('stop').onclick = () => { stopTracking(); status('Acompanhamento / simulação parado. Podes navegar livremente.','Caminhada terminada. Podes continuar a explorar pelas setas ou começar de novo.'); };
 document.getElementById('route').onclick = () => {
   stopTracking();
+  window.TourMap?.reset();
   const tracker = TourGeo.createTracker(data.nodes, data.start);
   const path = [data.nodes[0]];
   for (let i=1;i<data.nodes.length;i++) {
@@ -177,6 +189,7 @@ async function init() {
     const response = await fetch('nodes.json');
     if (!response.ok) throw new Error('Não foi possível carregar os pontos do tour.');
     data = await response.json();
+    window.TourMap?.init(data);
     scenario.replaceChildren();
     function add(label, position) {
       const option = document.createElement('option');
@@ -203,6 +216,7 @@ async function init() {
     const updateLabel=()=>{
       const node=data.nodes.find(n=>n.id===player.getCurrentNode());
       if(node) document.getElementById('current-label').textContent=node.title;
+      if(node) window.TourMap?.setActive(node.id);
     };
     player.addListener('changenode',updateLabel);
     updateLabel();

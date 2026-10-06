@@ -1,5 +1,15 @@
 # Tour R02 — teste no telemóvel
 
+## Mapa da visita (versão 5)
+
+**Manter o mapa visível** deixa um minimapa independente do cabeçalho, que continua aberto quando o cabeçalho é recolhido. A escolha é guardada no navegador. Fechar o mapa disponibiliza o botão **Mostrar mapa**. Arrastar o mapa permite explorar; **Centrar** retoma o acompanhamento da posição.
+
+Os pontos representam as imagens, o ponto verde com contorno amarelo destaca a imagem atual e o marcador azul com seta acompanha a posição. O rasto azul mostra a caminhada e o círculo azul claro representa a precisão indicada pelo GPS. O rasto é mantido apenas em memória, até 600 amostras, e é reiniciado ao começar uma nova caminhada.
+
+Em **Noutro local**, o marcador acompanha a posição virtual na tour, calculada a partir dos movimentos relativos e do alinhamento inicial. Em **No local da visita**, acompanha as coordenadas reais. A simulação também movimenta o marcador. Posições rejeitadas por precisão insuficiente não movem o marcador.
+
+Leaflet 1.9.4 é incluído localmente, com a licença. O fundo usa os mapas públicos de OpenStreetMap e precisa de ligação à internet. São pedidos apenas os mosaicos visíveis, com o crédito ao fornecedor no mapa; as posições não são enviadas como coordenadas para um serviço de rastreamento. Os pedidos do fundo do mapa são feitos diretamente pelo navegador ao fornecedor. Se o fundo falhar, os pontos e o marcador continuam disponíveis.
+
 ## Começar uma caminhada
 
 Escolher **Noutro local — experimentar aqui** ou **No local da visita** e tocar em **Começar caminhada**. Este botão obtém a localização e inicia o acompanhamento numa única ação. Não é necessário verificar o GPS antes. **Terminar caminhada** interrompe o acompanhamento. Tocar no cabeçalho recolhe o painel, mantendo o nome da imagem atual visível. Simulações, coordenadas e diagnóstico ficam em **Opções de teste**.
