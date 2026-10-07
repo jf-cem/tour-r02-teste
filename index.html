@@ -21,7 +21,7 @@ body.map-open #visit-panel .panel{max-height:calc(100dvh - 290px)}body.map-expan
 #visit-panel .panel{max-height:calc(100dvh - 270px)}body.map-open #visit-panel .panel{max-height:max(100px,calc(100dvh - 430px))}body.map-expanded #visit-panel .panel{max-height:max(100px,calc(100dvh - 590px))}
 @media(max-height:650px){body.map-expanded #visit-panel .panel{max-height:100px}}
 @supports not (backdrop-filter:blur(1px)){#route-strip{background:#234d43ee}}
-</style></head><body>
+#route-strip{padding:4px 52px 4px 10px;border-radius:13px}.route-heading{height:12px;gap:4px}.route-heading strong{font-size:10px}.route-heading span{font-size:10px;white-space:nowrap}.route-heading button{position:absolute;right:7px;top:7px;min-height:30px;padding:3px 6px;font-size:10px;border-radius:8px}#route-line{height:24px}</style></head><body>
 <iframe id="tour" src="tour.html" title="Visita virtual" allow="geolocation; fullscreen; accelerometer; gyroscope" allowfullscreen></iframe>
 <details id="visit-panel" open><summary><span><strong>Visita virtual</strong><span id="current-label">Caminhar e explorar</span></span></summary><div class="panel">
 <p>As imagens mudam automaticamente à medida que caminhas.</p>
@@ -42,7 +42,7 @@ body.map-open #visit-panel .panel{max-height:calc(100dvh - 290px)}body.map-expan
 <details><summary>Diagnóstico de localização</summary><p id="technical-status" class="technical">A preparar…</p><p id="diagnostics" class="technical">A verificar…</p><a href="https://jf-cem.github.io/tour-r02-teste/?v=6" target="_blank" rel="noopener">Abrir diretamente no navegador</a>
 <small>Versão 6. Raio de 100 m. Precisão máxima de 20 m. Mudanças confirmadas com duas atualizações e margem de 2 m. O minimapa usa OpenStreetMap. O mapa Google da skin original continua sem chave de API.</small></details>
 </details></div></details>
-<section id="route-strip" aria-label="Progresso ao longo da visita"><div class="route-heading"><strong>Percurso</strong><span id="route-position">A aguardar caminhada</span><button id="route-map-toggle" aria-pressed="false">Mapa</button></div><svg id="route-line" viewBox="0 0 300 48" preserveAspectRatio="none" role="img" aria-label="Pontos do percurso. Verde: panorama atual. Azul: posição."></svg></section>
+<section id="route-strip" aria-label="Progresso ao longo da visita"><div class="route-heading"><strong>Percurso</strong><span id="route-position">A aguardar caminhada</span><button id="route-map-toggle" aria-pressed="false">Mapa</button></div><svg id="route-line" viewBox="0 0 300 32" preserveAspectRatio="none" role="img" aria-label="Pontos do percurso. Verde: panorama atual. Azul: posição."></svg></section>
 <section id="mini-map-panel" aria-label="Mapa da visita"><div class="map-heading"><strong>Mapa</strong><button id="map-size" aria-label="Ampliar mapa" aria-expanded="false" title="Ampliar mapa">↗</button><button id="map-center" aria-pressed="true" aria-label="Seguir a minha posição" title="Seguir a minha posição">◎</button><button id="map-close" aria-label="Ocultar mapa">×</button></div><div id="mini-map" role="region" aria-label="Pontos da visita e posição durante a caminhada"></div><p id="map-caption">A preparar o mapa…</p></section>
 <button id="map-launch" hidden>Mostrar mapa</button>
 <script src="geo.js?v=6"></script><script src="3rdparty/leaflet/leaflet.js"></script><script src="gps-start.js?v=6"></script><script src="route-strip.js?v=6"></script><script src="minimap.js?v=6"></script><script src="test-ui.js?v=6"></script></body></html>

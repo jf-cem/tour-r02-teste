@@ -8,14 +8,14 @@
   let dot,uncertainty;
   function init(tour){
     data=tour;const route=TourGeo.routePosition(tour.nodes[0],tour.nodes);lengths=route.cumulative;total=route.total||1;
-    element('line',{x1:14,x2:286,y1:20,y2:20,stroke:'#ffffff66','stroke-width':4,'stroke-linecap':'round'});
-    uncertainty=element('line',{x1:14,x2:14,y1:20,y2:20,stroke:'#75c6ff55','stroke-width':13,'stroke-linecap':'round',visibility:'hidden'});
+    element('line',{x1:14,x2:286,y1:12,y2:12,stroke:'#ffffff66','stroke-width':4,'stroke-linecap':'round'});
+    uncertainty=element('line',{x1:14,x2:14,y1:12,y2:12,stroke:'#75c6ff55','stroke-width':13,'stroke-linecap':'round',visibility:'hidden'});
     tour.nodes.forEach((node,i)=>{
-      const circle=element('circle',{cx:x(lengths[i]),cy:20,r:3.3,fill:'#d6e5df','data-node':node.id});
+      const circle=element('circle',{cx:x(lengths[i]),cy:12,r:3.3,fill:'#d6e5df','data-node':node.id});
       const title=document.createElementNS(ns,'title');title.textContent=node.title;circle.append(title);
-      if(i===0||i===4||i===9||i===tour.nodes.length-1){const text=element('text',{x:x(lengths[i]),y:42,'text-anchor':i===0?'start':i===tour.nodes.length-1?'end':'middle',fill:'#e7f0ed','font-size':10});text.textContent='P'+String(i+1).padStart(2,'0');}
+      if(i===0||i===4||i===9||i===tour.nodes.length-1){const text=element('text',{x:x(lengths[i]),y:30,'text-anchor':i===0?'start':i===tour.nodes.length-1?'end':'middle',fill:'#e7f0ed','font-size':10});text.textContent='P'+String(i+1).padStart(2,'0');}
     });
-    dot=element('circle',{cx:14,cy:20,r:5,fill:'#4ab7ff',stroke:'#fff','stroke-width':2,visibility:'hidden'});
+    dot=element('circle',{cx:14,cy:12,r:5,fill:'#4ab7ff',stroke:'#fff','stroke-width':2,visibility:'hidden'});
     setActive(tour.start);
   }
   function setActive(id){active=id;if(!data)return;svg.querySelectorAll('[data-node]').forEach(el=>{const current=el.dataset.node===id;el.setAttribute('r',current?'5':'3.3');el.setAttribute('fill',current?'#74e3a7':'#d6e5df');});}

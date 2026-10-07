@@ -7,7 +7,10 @@
     function snapshot(now) {
       samples=samples.filter(s=>now-s.timestamp<=15000);
       const fresh=samples.filter(s=>now-s.timestamp<=10000);
-      const recent=samples.slice(-5);
+      // Spread the selected readings in time, even if the device updates rapidly.
+      const recent=[];
+      for(let i=samples.length-1;i>=0&&recent.length<5;i--){if(!recent.length||recent.at(-1).timestamp-samples[i].timestamp>=2000)recent.push(samples[i]);}
+      recent.reverse();
       const median=values=>values.sort((a,b)=>a-b)[Math.floor(values.length/2)];
       const center=recent.length?{lat:median(recent.map(s=>s.lat)),lng:median(recent.map(s=>s.lng))}:null;
       const spread=center?Math.max(...recent.map(s=>geo.distance(s,center))):Infinity;
