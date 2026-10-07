@@ -13,7 +13,7 @@
     tour.nodes.forEach((node,i)=>{
       const circle=element('circle',{cx:x(lengths[i]),cy:12,r:3.3,fill:'#d6e5df','data-node':node.id});
       const title=document.createElementNS(ns,'title');title.textContent=node.title;circle.append(title);
-      if(i===0||i===4||i===9||i===tour.nodes.length-1){const text=element('text',{x:x(lengths[i]),y:30,'text-anchor':i===0?'start':i===tour.nodes.length-1?'end':'middle',fill:'#e7f0ed','font-size':10});text.textContent='P'+String(i+1).padStart(2,'0');}
+      if(i===0||i===4||i===9||i===tour.nodes.length-1){const text=document.createElement('span');text.style.left=(x(lengths[i])/3)+'%';text.className=i===0?'first':i===tour.nodes.length-1?'last':'';text.textContent='P'+String(i+1).padStart(2,'0');document.getElementById('route-labels').append(text);}
     });
     dot=element('circle',{cx:14,cy:12,r:5,fill:'#4ab7ff',stroke:'#fff','stroke-width':2,visibility:'hidden'});
     setActive(tour.start);
