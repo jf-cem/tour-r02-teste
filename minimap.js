@@ -1,7 +1,6 @@
 (function () {
   'use strict';
   const panel=document.getElementById('mini-map-panel');
-  const checkbox=document.getElementById('show-map');
   const launch=document.getElementById('map-launch');
   const caption=document.getElementById('map-caption');
   const sizeButton=document.getElementById('map-size');
@@ -17,14 +16,13 @@
   }
   let map, nodes=[], markers=new Map(), walker, accuracyRing, trail, position=null, points=[], following=true, lastPosition=null, heading=0;
   function visibility(show, save=true) {
-    checkbox.checked=show; panel.hidden=!show; launch.hidden=show;
+    panel.hidden=!show; launch.hidden=show;
     document.body.classList.toggle('map-open',show);
     document.getElementById('route-map-toggle').setAttribute('aria-pressed',String(show));
     document.body.classList.toggle('map-expanded',show&&panel.classList.contains('expanded'));
     if(save) {try {localStorage.setItem('tour-r02-map-visible-v6',String(show));}catch (_) {}}
     if(map && show) requestAnimationFrame(()=>{map.invalidateSize(); if(position && following) map.panTo(position,{animate:false});else if(!position)map.fitBounds(nodes.map(n=>[n.lat,n.lng]),{padding:[18,18],maxZoom:19});});
   }
-  checkbox.onchange=()=>visibility(checkbox.checked);
   document.getElementById('map-close').onclick=()=>visibility(false);
   launch.onclick=()=>visibility(true);
   document.getElementById('map-center').onclick=()=>{
