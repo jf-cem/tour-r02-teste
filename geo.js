@@ -51,7 +51,21 @@
   function relativePosition(origin, position, virtualOrigin, rotation=0) {
     return destination(virtualOrigin,distance(origin,position),bearing(origin,position)+rotation);
   }
-  const api = { distance, nearest, createTracker, bearing, destination, relativePosition };
+  function routePosition(position,nodes) {
+    const cumulative=[0];for(let i=1;i<nodes.length;i++)cumulative.push(cumulative[i-1]+distance(nodes[i-1],nodes[i]));
+    let best={meters:Infinity,along:0};
+    const scale=Math.cos(position.lat*Math.PI/180);
+    for(let i=1;i<nodes.length;i++){
+      const a=nodes[i-1],b=nodes[i],dx=(b.lng-a.lng)*scale,dy=b.lat-a.lat;
+      const px=(position.lng-a.lng)*scale,py=position.lat-a.lat;
+      const t=Math.max(0,Math.min(1,(px*dx+py*dy)/(dx*dx+dy*dy||1)));
+      const projected={lat:a.lat+dy*t,lng:a.lng+(b.lng-a.lng)*t};
+      const meters=distance(position,projected);
+      if(meters<best.meters)best={meters,along:cumulative[i-1]+(cumulative[i]-cumulative[i-1])*t};
+    }
+    return {...best,total:cumulative.at(-1),cumulative};
+  }
+  const api = { distance, nearest, createTracker, bearing, destination, relativePosition, routePosition };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.TourGeo = api;
 })(typeof window === 'undefined' ? globalThis : window);

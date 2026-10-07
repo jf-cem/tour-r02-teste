@@ -4,11 +4,24 @@
   const checkbox=document.getElementById('show-map');
   const launch=document.getElementById('map-launch');
   const caption=document.getElementById('map-caption');
+  const sizeButton=document.getElementById('map-size');
+  function size(expanded,save=true) {
+    panel.classList.toggle('expanded',expanded);
+    document.body.classList.toggle('map-expanded',expanded&&!panel.hidden);
+    sizeButton.textContent=expanded?'↙':'↗';
+    sizeButton.setAttribute('aria-expanded',String(expanded));
+    sizeButton.setAttribute('aria-label',expanded?'Reduzir mapa':'Ampliar mapa');
+    sizeButton.title=expanded?'Reduzir mapa':'Ampliar mapa';
+    if(save){try{localStorage.setItem('tour-r02-map-expanded',String(expanded));}catch(_){}}
+    if(map)requestAnimationFrame(()=>{map.invalidateSize({pan:false});if(position&&following)map.panTo(position,{animate:false});else if(!position)map.fitBounds(nodes.map(n=>[n.lat,n.lng]),{padding:[14,14],maxZoom:19,animate:false});});
+  }
   let map, nodes=[], markers=new Map(), walker, accuracyRing, trail, position=null, points=[], following=true, lastPosition=null, heading=0;
   function visibility(show, save=true) {
     checkbox.checked=show; panel.hidden=!show; launch.hidden=show;
     document.body.classList.toggle('map-open',show);
-    if(save) {try {localStorage.setItem('tour-r02-map-visible',String(show));}catch (_) {}}
+    document.getElementById('route-map-toggle').setAttribute('aria-pressed',String(show));
+    document.body.classList.toggle('map-expanded',show&&panel.classList.contains('expanded'));
+    if(save) {try {localStorage.setItem('tour-r02-map-visible-v6',String(show));}catch (_) {}}
     if(map && show) requestAnimationFrame(()=>{map.invalidateSize(); if(position && following) map.panTo(position,{animate:false});else if(!position)map.fitBounds(nodes.map(n=>[n.lat,n.lng]),{padding:[18,18],maxZoom:19});});
   }
   checkbox.onchange=()=>visibility(checkbox.checked);
@@ -19,13 +32,17 @@
     if(!map)return;
     if(position)map.panTo(position,{animate:true,duration:0.35});
     else map.fitBounds(nodes.map(n=>[n.lat,n.lng]),{padding:[18,18],maxZoom:19});
-    document.getElementById('map-center').textContent='A seguir';
+    document.getElementById('map-center').textContent='◎';
     document.getElementById('map-center').setAttribute('aria-pressed','true');
   };
-  let initial=true;
-  try {initial=localStorage.getItem('tour-r02-map-visible')!=='false';}catch (_) {}
+  let initial=false;
+  try {initial=localStorage.getItem('tour-r02-map-visible-v6')==='true';}catch (_) {}
   visibility(initial,false);
+  let expanded=false;try{expanded=localStorage.getItem('tour-r02-map-expanded')==='true';}catch(_){}
+  size(expanded,false);
+  sizeButton.onclick=()=>size(!panel.classList.contains('expanded'));
   function init(data) {
+    window.TourRoute?.init(data);
     nodes=data.nodes;
     if(!window.L){caption.textContent='O mapa não carregou. A caminhada continua disponível.';return;}
     try {
@@ -46,7 +63,7 @@
       map.fitBounds(nodes.map(n=>[n.lat,n.lng]),{padding:[18,18],maxZoom:19});
       map.on('dragstart',()=>{
         following=false;
-        document.getElementById('map-center').textContent='Centrar';
+        document.getElementById('map-center').textContent='◎';
         document.getElementById('map-center').setAttribute('aria-pressed','false');
       });
       new ResizeObserver(()=>map.invalidateSize({pan:false})).observe(document.getElementById('mini-map'));
@@ -55,19 +72,23 @@
     } catch (_) {caption.textContent='O mapa não carregou. A caminhada continua disponível.';}
   }
   function setActive(id) {
+    window.TourRoute?.setActive(id);
     markers.forEach((marker,key)=>marker.setStyle({radius:key===id?7:4,fillColor:key===id?'#17674e':'#607d6b',color:key===id?'#f7cf52':'#fff',weight:key===id?3:1.5}));
     panel.dataset.activeNode=id;
   }
   function reset() {
+    window.TourRoute?.reset();
     points=[];position=null;lastPosition=null;heading=0;following=true;
     if(map){trail.setLatLngs([]);map.removeLayer(walker);map.removeLayer(accuracyRing);if(!panel.hidden)map.fitBounds(nodes.map(n=>[n.lat,n.lng]),{padding:[18,18],maxZoom:19,animate:false});}
     delete panel.dataset.latitude;delete panel.dataset.longitude;
     caption.textContent='A aguardar a tua posição…';
-    document.getElementById('map-center').textContent='A seguir';
+    document.getElementById('map-center').textContent='◎';
     document.getElementById('map-center').setAttribute('aria-pressed','true');
   }
   function update(coords, accuracy, virtual) {
+    window.TourRoute?.update(coords,accuracy,virtual);
     if(!map)return;
+    const firstPosition=!position;
     const next=L.latLng(coords.lat,coords.lng);
     if(lastPosition && TourGeo.distance(lastPosition,coords)>0.7)heading=TourGeo.bearing(lastPosition,coords);
     if(!lastPosition || TourGeo.distance(lastPosition,coords)>0.4){points.push(next);if(points.length>600)points.shift();lastPosition={...coords};}
@@ -79,8 +100,8 @@
     accuracyRing.setLatLng(next).setRadius(Number.isFinite(accuracy)?Math.max(0,accuracy):0).addTo(map);
     walker.bringToFront?.();
     caption.textContent=virtual?'Azul: posição no teste · verde: imagem atual':'Azul: a tua posição · verde: imagem atual';
-    if(following && !panel.hidden && !map.getBounds().pad(-0.3).contains(next))map.panTo(next,{animate:true,duration:0.35});
+    if(following && !panel.hidden){if(firstPosition)map.setView(next,19,{animate:false});else if(!map.getBounds().pad(-0.3).contains(next))map.panTo(next,{animate:true,duration:0.35});}
   }
-  function pause(){if(position)caption.textContent='Última posição · caminhada parada';}
+  function pause(){window.TourRoute?.pause();if(position)caption.textContent='Última posição · caminhada parada';}
   window.TourMap={init,setActive,reset,update,pause};
 })();

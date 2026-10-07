@@ -3,8 +3,9 @@ const frame = document.getElementById('tour');
 const statusBox = document.getElementById('status');
 const scenario = document.getElementById('scenario');
 const buttons = ['simulate', 'custom', 'gps', 'reset', 'route', 'follow'].map(id => document.getElementById(id));
-let data, cases = [], revision = 0, watchId = null, routeTimer = null, ready = false;
+let data, cases = [], revision = 0, watchId = null, routeTimer = null, preparationTimer = null, ready = false;
 let lastError = '', permissionState = 'não disponível', diagnosticRevision = 0;
+let preparationSummary='Ainda não realizada';
 function status(text, friendly = text) {
   document.getElementById('technical-status').textContent = text;
   statusBox.textContent = friendly;
@@ -22,12 +23,17 @@ async function diagnostics() {
   const policy = document.permissionsPolicy || document.featurePolicy;
   let allowed = 'não verificável';
   try { allowed = policy ? (policy.allowsFeature('geolocation') ? 'permitida' : 'bloqueada') : allowed; } catch (_) {}
-  document.getElementById('diagnostics').textContent = `Versão: 5\nHTTPS: ${window.isSecureContext ? 'sim' : 'não'}\nAPI de localização: ${navigator.geolocation ? 'disponível' : 'indisponível'}\nPermissão reportada pelo navegador: ${permissionState}\nPolítica da página: ${allowed}\nPágina dentro de outra aplicação/frame: ${window.top !== window.self ? 'sim' : 'não'}\nÚltimo erro: ${lastError || 'nenhum'}\nNavegador: ${navigator.userAgent}`;
+  document.getElementById('diagnostics').textContent = `Versão: 6\nHTTPS: ${window.isSecureContext ? 'sim' : 'não'}\nAPI de localização: ${navigator.geolocation ? 'disponível' : 'indisponível'}\nPermissão reportada pelo navegador: ${permissionState}\nPolítica da página: ${allowed}\nPágina dentro de outra aplicação/frame: ${window.top !== window.self ? 'sim' : 'não'}\nÚltimo erro: ${lastError || 'nenhum'}\nNavegador: ${navigator.userAgent}`;
+  document.getElementById('diagnostics').textContent+=`\nPreparação inicial: ${preparationSummary}`;
 }
 function stopTracking() {
   revision++;
   if (watchId !== null) navigator.geolocation.clearWatch(watchId);
   if (routeTimer !== null) clearInterval(routeTimer);
+  if (preparationTimer !== null) clearInterval(preparationTimer);
+  preparationTimer=null;
+  document.getElementById('use-position').hidden=true;
+  document.getElementById('use-position').onclick=null;
   watchId = null; routeTimer = null;
   window.TourMap?.pause();
   document.getElementById('stop').disabled = true;
@@ -95,10 +101,39 @@ function startGps(follow) {
   const first = data.nodes.find(n=>n.id===data.start);
   const next = data.nodes[data.nodes.indexOf(first)+1];
   let origin = null, rotation = align ? null : 0;
+  let preparing=follow, directionDistance=8;
+  const preparation=TourGpsStart.createPreparation();
+  const continueButton=document.getElementById('use-position');
+  function finishPreparation(result,manual=false) {
+    if(current!==revision||!preparing)return;
+    const chosen=manual?result.fallback:{...result.position,accuracy:result.accuracy};
+    if(!chosen)return;
+    preparationSummary=`${manual?'Escolha manual':'Estável'} · ${result.count} leituras · ${Math.round(result.elapsed/1000)} s · precisão do aparelho ±${Math.round(chosen.accuracy)} m`;
+    preparing=false;clearInterval(preparationTimer);preparationTimer=null;continueButton.hidden=true;
+    directionDistance=Math.max(8,Math.min(30,chosen.accuracy*2));
+    document.getElementById('follow').textContent='Caminhada em curso';
+    success({coords:{latitude:chosen.lat,longitude:chosen.lng,accuracy:chosen.accuracy},timestamp:Date.now()});
+    diagnostics();
+  }
+  function reportPreparation(result) {
+    if(current!==revision||!preparing)return;
+    if(result.ready){finishPreparation(result);return;}
+    continueButton.hidden=!result.fallback;
+    const seconds=Math.ceil(Math.max(0,10000-result.elapsed)/1000);
+    const accuracy=result.accuracy===null?'A aguardar sinal':`±${Math.round(result.accuracy)} m`;
+    document.getElementById('gps-quality').textContent=`GPS: ${accuracy}`;
+    status(`Preparação inicial · ${result.count}/5 leituras\nPrecisão do aparelho: ${accuracy}\nDispersão: ${Number.isFinite(result.spread)?result.spread.toFixed(1)+' m':'a aguardar'}\nTempo: ${Math.floor(result.elapsed/1000)} s.`,
+      seconds>0?`A preparar a localização… Fica parado por cerca de ${seconds} segundos. GPS: ${accuracy}.`:
+      result.fallback?'A posição ainda oscila. Podes aguardar ou começar com a melhor leitura recente.':
+      'A preparar a localização… Fica parado enquanto confirmamos várias leituras estáveis.');
+  }
+  continueButton.onclick=()=>{const result=preparation.snapshot(Date.now());if(result.fallback)finishPreparation(result,true);else reportPreparation(result);};
   window.TourMap?.reset();
   const success = position => {
     if (current !== revision) return;
     try {
+      if(preparing){reportPreparation(preparation.add(position));return;}
+      document.getElementById('gps-quality').textContent=`GPS: ±${Math.round(position.coords.accuracy)} m`;
       const coords = {lat:position.coords.latitude, lng:position.coords.longitude};
       if (follow && relative) {
         const accuracy=position.coords.accuracy;
@@ -109,14 +144,14 @@ function startGps(follow) {
         if (!origin) {
           origin={...coords}; openNode(first.id);
           trackedPosition(tracker,first,accuracy,'Teste com GPS relativo · origem guardada como P01');
-          if (align) status(document.getElementById('technical-status').textContent+'\nCaminha cerca de 8 m numa direção para alinhar P01 → P02.','Estás no início. Caminha cerca de 8 metros em linha reta para definir a direção da visita.');
+          if (align) status(document.getElementById('technical-status').textContent+`\nCaminha cerca de ${Math.ceil(directionDistance)} m numa direção para alinhar P01 → P02.`,`Posição inicial preparada. Caminha cerca de ${Math.ceil(directionDistance)} metros em linha reta para definir a direção da visita.`);
           return;
         }
         const traveled=TourGeo.distance(origin,coords);
         if (rotation===null) {
-          if (traveled<8) {
+          if (traveled<directionDistance) {
             window.TourMap?.update(TourGeo.destination(first,traveled,TourGeo.bearing(first,next)),accuracy,true);
-            status(`Teste com GPS relativo · origem guardada como P01\nDeslocamento desde o início: ${traveled.toFixed(1)} m.\nA alinhar a direção: caminha até cerca de 8 m numa direção.\nPrecisão: ±${Math.round(accuracy)} m.`,`Continua em linha reta para definir a direção. Faltam cerca de ${Math.ceil(8-traveled)} metros.`);return;
+            status(`Teste com GPS relativo · origem guardada como P01\nDeslocamento desde o início: ${traveled.toFixed(1)} m.\nA alinhar a direção: caminha até cerca de ${Math.ceil(directionDistance)} m numa direção.\nPrecisão: ±${Math.round(accuracy)} m.`,`Continua em linha reta para definir a direção. Faltam cerca de ${Math.ceil(directionDistance-traveled)} metros.`);return;
           }
           rotation=TourGeo.bearing(first,next)-TourGeo.bearing(origin,coords);
         }
@@ -136,6 +171,7 @@ function startGps(follow) {
   if (follow) {
     watchId = navigator.geolocation.watchPosition(success, error => gpsError(error,current), options);
     activeTracking();
+    if(preparing){document.getElementById('follow').textContent='A preparar localização…';reportPreparation(preparation.snapshot(Date.now()));preparationTimer=setInterval(()=>reportPreparation(preparation.snapshot(Date.now())),1000);}
   } else navigator.geolocation.getCurrentPosition(success, error => gpsError(error,current), options);
 }
 function trackedPosition(tracker, coords, accuracy, source) {
