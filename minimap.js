@@ -6,32 +6,45 @@
   const sizeButton=document.getElementById('map-size');
   function size(expanded,save=true) {
     panel.classList.toggle('expanded',expanded);
+    if(expanded){document.getElementById('map-resize-tools').hidden=true;document.getElementById('map-resize').setAttribute('aria-expanded','false');}
     document.body.classList.toggle('map-expanded',expanded&&!panel.hidden);
     sizeButton.textContent=expanded?'↙':'↗';
     sizeButton.setAttribute('aria-expanded',String(expanded));
     sizeButton.setAttribute('aria-label',expanded?'Reduzir mapa':'Ampliar mapa');
     sizeButton.title=expanded?'Reduzir mapa':'Ampliar mapa';
     if(save){try{localStorage.setItem('tour-r02-map-expanded',String(expanded));}catch(_){}}
-    if(map)requestAnimationFrame(()=>{map.invalidateSize({pan:false});if(position&&following)map.panTo(position,{animate:false});else if(!position)map.fitBounds(nodes.map(n=>[n.lat,n.lng]),{padding:[14,14],maxZoom:19,animate:false});});
+    if(map)requestAnimationFrame(()=>{map.invalidateSize({pan:false});if(position)map.setView(position,20,{animate:false});else if(expanded)map.fitBounds(nodes.map(n=>[n.lat,n.lng]),{padding:[14,14],maxZoom:19,animate:false});else if(nodes.length)map.setView([nodes[0].lat,nodes[0].lng],20,{animate:false});});
   }
-  let map, nodes=[], markers=new Map(), walker, accuracyRing, trail, position=null, points=[], following=true, lastPosition=null, heading=0;
+  let map, nodes=[], markers=new Map(), walker, accuracyRing, trail, position=null, points=[], lastPosition=null, heading=0;
   function visibility(show, save=true) {
     panel.hidden=!show; launch.hidden=show;
     document.body.classList.toggle('map-open',show);
     document.getElementById('route-map-toggle').setAttribute('aria-pressed',String(show));
     document.body.classList.toggle('map-expanded',show&&panel.classList.contains('expanded'));
     if(save) {try {localStorage.setItem('tour-r02-map-visible-v6',String(show));}catch (_) {}}
-    if(map && show) requestAnimationFrame(()=>{map.invalidateSize(); if(position && following) map.panTo(position,{animate:false});else if(!position)map.fitBounds(nodes.map(n=>[n.lat,n.lng]),{padding:[18,18],maxZoom:19});});
+    if(map && show) requestAnimationFrame(()=>{map.invalidateSize(); if(position)map.setView(position,20,{animate:false});else if(nodes.length)map.setView([nodes[0].lat,nodes[0].lng],20,{animate:false});});
   }
   document.getElementById('map-close').onclick=()=>visibility(false);
   launch.onclick=()=>visibility(true);
-  document.getElementById('map-center').onclick=()=>{
-    following=true;
-    if(!map)return;
-    if(position)map.panTo(position,{animate:true,duration:0.35});
-    else map.fitBounds(nodes.map(n=>[n.lat,n.lng]),{padding:[18,18],maxZoom:19});
-    document.getElementById('map-center').textContent='◎';
-    document.getElementById('map-center').setAttribute('aria-pressed','true');
+  const resizeButton=document.getElementById('map-resize');
+  const resizeTools=document.getElementById('map-resize-tools');
+  const widthInput=document.getElementById('map-width');
+  function resizeMap(value,save=true){
+    const width=Math.max(160,Math.min(280,Number(value)||160));
+    panel.style.setProperty('--map-width',width+'px');
+    panel.style.setProperty('--map-height',Math.round(width*0.55)+'px');
+    widthInput.value=String(width);
+    document.getElementById('map-width-value').textContent=width+' px';
+    if(save){try{localStorage.setItem('tour-r02-map-width-v72',String(width));}catch(_){}}
+    if(map)requestAnimationFrame(()=>{map.invalidateSize({pan:false});if(position)map.setView(position,20,{animate:false});});
+  }
+  let storedWidth=160;try{storedWidth=localStorage.getItem('tour-r02-map-width-v72')||160;}catch(_){}
+  resizeMap(storedWidth,false);
+  widthInput.oninput=()=>resizeMap(widthInput.value);
+  resizeButton.onclick=()=>{
+    if(panel.classList.contains('expanded'))size(false);
+    resizeTools.hidden=!resizeTools.hidden;
+    resizeButton.setAttribute('aria-expanded',String(!resizeTools.hidden));
   };
   let initial=false;
   try {initial=localStorage.getItem('tour-r02-map-visible-v6')==='true';}catch (_) {}
@@ -44,10 +57,10 @@
     nodes=data.nodes;
     if(!window.L){caption.textContent='O mapa não carregou. A caminhada continua disponível.';return;}
     try {
-      map=L.map('mini-map',{zoomControl:false,attributionControl:true,maxZoom:19});
+      map=L.map('mini-map',{zoomControl:false,attributionControl:true,maxZoom:20});
       map.attributionControl.setPrefix(false);
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
-        maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>',keepBuffer:0,updateWhenIdle:true
+        maxNativeZoom:19,maxZoom:20,attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>',keepBuffer:0,updateWhenIdle:true
       }).on('tileerror',()=>{caption.textContent='Sem mapa de fundo. Os pontos e a posição continuam visíveis.';}).addTo(map);
       L.polyline(nodes.map(n=>[n.lat,n.lng]),{color:'#658875',weight:3,opacity:0.7,interactive:false}).addTo(map);
       nodes.forEach(node=>{
@@ -58,12 +71,7 @@
       accuracyRing=L.circle([nodes[0].lat,nodes[0].lng],{radius:0,color:'#1c76dc',weight:1,fillOpacity:0.08,interactive:false});
       trail=L.polyline([],{color:'#1c76dc',weight:2,opacity:0.85,interactive:false}).addTo(map);
       walker=L.marker([nodes[0].lat,nodes[0].lng],{icon:L.divIcon({className:'walker-icon',html:'<span class="walker-arrow"></span><span class="walker-dot"></span>',iconSize:[28,28],iconAnchor:[14,14]}),interactive:false,zIndexOffset:1000});
-      map.fitBounds(nodes.map(n=>[n.lat,n.lng]),{padding:[18,18],maxZoom:19});
-      map.on('dragstart',()=>{
-        following=false;
-        document.getElementById('map-center').textContent='◎';
-        document.getElementById('map-center').setAttribute('aria-pressed','false');
-      });
+      map.setView([nodes[0].lat,nodes[0].lng],20,{animate:false});
       new ResizeObserver(()=>map.invalidateSize({pan:false})).observe(document.getElementById('mini-map'));
       setActive(data.start);
       caption.textContent='Pontos: imagens da visita · azul: a tua posição';
@@ -76,17 +84,14 @@
   }
   function reset() {
     window.TourRoute?.reset();
-    points=[];position=null;lastPosition=null;heading=0;following=true;
-    if(map){trail.setLatLngs([]);map.removeLayer(walker);map.removeLayer(accuracyRing);if(!panel.hidden)map.fitBounds(nodes.map(n=>[n.lat,n.lng]),{padding:[18,18],maxZoom:19,animate:false});}
+    points=[];position=null;lastPosition=null;heading=0;
+    if(map){trail.setLatLngs([]);map.removeLayer(walker);map.removeLayer(accuracyRing);if(!panel.hidden)map.setView([nodes[0].lat,nodes[0].lng],20,{animate:false});}
     delete panel.dataset.latitude;delete panel.dataset.longitude;
     caption.textContent='A aguardar a tua posição…';
-    document.getElementById('map-center').textContent='◎';
-    document.getElementById('map-center').setAttribute('aria-pressed','true');
   }
   function update(coords, accuracy, virtual) {
     window.TourRoute?.update(coords,accuracy,virtual);
     if(!map)return;
-    const firstPosition=!position;
     const next=L.latLng(coords.lat,coords.lng);
     if(lastPosition && TourGeo.distance(lastPosition,coords)>0.7)heading=TourGeo.bearing(lastPosition,coords);
     if(!lastPosition || TourGeo.distance(lastPosition,coords)>0.4){points.push(next);if(points.length>600)points.shift();lastPosition={...coords};}
@@ -98,7 +103,7 @@
     accuracyRing.setLatLng(next).setRadius(Number.isFinite(accuracy)?Math.max(0,accuracy):0).addTo(map);
     walker.bringToFront?.();
     caption.textContent=virtual?'Azul: posição no teste · verde: imagem atual':'Azul: a tua posição · verde: imagem atual';
-    if(following && !panel.hidden){if(firstPosition)map.setView(next,19,{animate:false});else if(!map.getBounds().pad(-0.3).contains(next))map.panTo(next,{animate:true,duration:0.35});}
+    if(!panel.hidden){map.setView(next,20,{animate:false});}
   }
   function pause(){window.TourRoute?.pause();if(position)caption.textContent='Última posição · caminhada parada';}
   window.TourMap={init,setActive,reset,update,pause};

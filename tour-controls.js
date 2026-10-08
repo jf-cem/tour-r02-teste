@@ -31,10 +31,13 @@
     if(!player)return;
     const viewer=frame.getBoundingClientRect();
     const visible=navigationElements().filter(el=>{const rect=el.getBoundingClientRect(),style=frame.contentWindow.getComputedStyle(el);return style.visibility!=='hidden'&&style.display!=='none'&&rect.width>0&&rect.height>0&&rect.right>0&&rect.left<viewer.width&&rect.bottom>0&&rect.top<viewer.height;});
-    const top=visible.length?Math.min(...visible.map(el=>el.getBoundingClientRect().top+viewer.top)):window.innerHeight-90;
-    const bottom=Math.max(90,window.innerHeight-top+24);
-    document.documentElement.style.setProperty('--route-bottom',bottom+'px');
-    document.documentElement.style.setProperty('--map-bottom',(bottom+document.getElementById('route-strip').getBoundingClientRect().height+12)+'px');
+    const bar=document.getElementById('route-strip');
+    const bottom=bar.getBoundingClientRect().bottom;
+    const top=bottom-bar.getBoundingClientRect().height;
+    const edges=visible.map(el=>el.getBoundingClientRect()).filter(r=>r.bottom+viewer.top>top-6&&r.top+viewer.top<bottom+6);
+    const side=Math.max(48,...edges.map(r=>r.left<viewer.width/2?r.right+8:viewer.width-r.left+8));
+    document.documentElement.style.setProperty('--route-side',side+'px');
+    document.documentElement.style.setProperty('--map-bottom',(window.innerHeight-bar.getBoundingClientRect().top+10)+'px');
   }
   function queueLayout(){if(!layoutQueued){layoutQueued=true;requestAnimationFrame(layout);}}
   function init(pano){
