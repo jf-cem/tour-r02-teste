@@ -32,7 +32,7 @@ body.map-open #visit-panel .panel{max-height:calc(100dvh - 290px)}body.map-expan
 @media(max-width:350px){#visit-panel>summary{padding-right:134px}#motion-toggle{width:93px;font-size:10px}.route-heading span{font-size:10px}}
 @supports not (backdrop-filter:blur(1px)){#visit-panel{background:#e3eee8ee}}
 #motion-toggle{position:fixed;z-index:6;top:max(18px,calc(env(safe-area-inset-top) + 6px));left:calc(12px + min(400px,100vw - 24px) - 142px);right:auto}@media(max-width:350px){#motion-toggle{left:calc(12px + min(400px,100vw - 24px) - 130px)}}@media(min-width:601px) and (max-width:740px){#motion-toggle{left:200px}}
-/* v7.2: native-size route drawing and glass on a separate background layer. */
+/* v7.3: native-size route drawing and glass on a separate background layer. */
 #route-strip{left:var(--route-side,60px);right:var(--route-side,60px);bottom:max(8px,calc(env(safe-area-inset-bottom) + 8px));padding:3px 52px 1px 10px;isolation:isolate;background:none;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:0 3px 14px #0003,inset 0 1px 0 #ffffff50}
 #route-strip:before{content:'';position:absolute;inset:0;z-index:-1;border-radius:inherit;background:linear-gradient(135deg,#204b43c9,#3b6056ae);backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140%)}
 #route-line{height:18px;overflow:visible;filter:none;transform:none}#route-labels{height:11px;line-height:11px;font-size:9px}.route-heading{height:12px}.route-heading strong,.route-heading span{font-size:10px}.route-heading span{overflow:hidden;text-overflow:ellipsis}.route-heading button{top:7px}
@@ -40,27 +40,38 @@ body.map-open #visit-panel .panel{max-height:calc(100dvh - 290px)}body.map-expan
 #mini-map-panel.expanded{width:min(340px,calc(100vw - 24px))}#mini-map-panel.expanded #mini-map{height:min(230px,40dvh)}
 #map-resize-tools{padding:4px 8px 8px;background:#f2f6f3}#map-resize-tools label{display:flex;justify-content:space-between;margin:0;font-size:11px}#map-width{display:block;min-height:32px;height:32px;padding:0;margin:0;accent-color:#17674e}#map-resize[aria-expanded=true]{background:#d5eadf}
 @supports not (backdrop-filter:blur(1px)){#route-strip:before{background:#234d43ee}}
-</style></head><body>
+</style><link rel="stylesheet" href="visit-ui.css?v=7.3"></head><body>
 <p id="motion-message" role="status" hidden></p><iframe id="tour" src="tour.html" title="Visita virtual" allow="geolocation; fullscreen; accelerometer; gyroscope" allowfullscreen></iframe>
-<button id="motion-toggle" disabled aria-pressed="false">Olhar à volta</button><details id="visit-panel" open><summary><span><strong>Visita virtual</strong><span id="current-label">Caminhar e explorar</span></span></summary><div class="panel">
-<p class="hint">Para explorar movendo o telemóvel, toca em “Olhar à volta” no cabeçalho.</p><p>As imagens mudam automaticamente à medida que caminhas.</p>
-<label for="gps-mode">Onde vais fazer a caminhada?</label><select id="gps-mode"><option value="relative">Noutro local — experimentar aqui</option><option value="absolute">No local da visita</option></select>
-<p class="hint" id="mode-help">Vais começar na primeira imagem, onde quer que estejas. Os primeiros passos definem a direção da caminhada.</p>
-<p id="gps-quality" class="hint" aria-live="polite">GPS: a aguardar caminhada</p><button id="use-position" class="secondary" hidden>Começar com esta precisão</button><button id="follow" disabled>Começar caminhada</button><button id="stop" class="secondary" disabled hidden>Terminar caminhada</button>
-<p id="status" role="status" aria-live="polite">A preparar a visita…</p>
-<p class="hint">Permite o acesso à localização e mantém esta página aberta. Toca no cabeçalho para o recolher e ver melhor a imagem.</p>
-<details class="tools" id="test-tools"><summary>Opções de teste</summary>
-<p class="hint">Para experimentar pontos específicos e verificar o funcionamento da localização.</p>
+<button id="motion-toggle" disabled aria-pressed="false" aria-label="Olhar movendo o telemóvel">Olhar movendo o telemóvel</button><details id="visit-panel" open><summary><span><strong>Visita virtual</strong><span id="current-label">Caminhar e explorar</span></span></summary><div class="panel">
+<section id="walk-setup" aria-labelledby="setup-heading">
+<p class="intro">Caminha para mudar de imagem automaticamente.</p>
+<h2 id="setup-heading"><span class="step-number" aria-hidden="true">1</span> Onde vais caminhar?</h2>
+<div class="mode-choices" role="group" aria-labelledby="setup-heading">
+<button type="button" data-mode="absolute" aria-pressed="false"><strong>Estou no local da visita</strong><span>Seguir o percurso no local.</span></button>
+<button type="button" data-mode="relative" aria-pressed="true"><strong>Quero experimentar aqui</strong><span>Começar na primeira imagem.</span></button>
+</div>
+<select id="gps-mode" hidden aria-label="Local da caminhada"><option value="relative">Experimentar aqui</option><option value="absolute">No local da visita</option></select>
+<p class="hint" id="mode-help">Os primeiros passos em linha reta definem a direção da visita.</p>
+<h2 id="start-heading"><span class="step-number" aria-hidden="true">2</span> Começar a caminhada</h2>
+</section>
+<button id="follow" disabled>Começar caminhada</button>
+<section class="walk-status" aria-labelledby="walk-state-title"><h2 id="walk-state-title">A carregar a visita</h2><p id="status" role="status" aria-live="polite">A preparar as imagens…</p></section>
+<button id="use-position" class="secondary" hidden>Começar com a localização disponível</button>
+<button id="stop" disabled hidden>Terminar caminhada</button>
+<p id="walking-help" class="hint" hidden>Mantém esta página aberta durante a caminhada. Podes recolher a janela tocando no título.</p>
+<details id="explore-help" class="help-section"><summary>Como olhar à volta?</summary><p>Arrasta a imagem com o dedo ou toca nas setas para mudar de imagem.</p><p>Para olhar movendo o telemóvel, toca em <strong>“Olhar movendo o telemóvel”</strong> no cabeçalho. Isto muda a direção do olhar; a caminhada usa a tua localização.</p></details>
+<details class="tools" id="test-tools"><summary>Opções avançadas</summary>
+<p class="hint">Testes e informações técnicas. Não precisas destas opções para fazer a visita.</p><p id="gps-quality" class="hint">GPS: a aguardar caminhada</p>
 <label for="scenario">Posição simulada</label><select id="scenario" disabled><option>A carregar os pontos…</option></select>
 <button id="simulate" class="secondary" disabled>Testar esta posição</button><button id="route" class="secondary" disabled>Ver caminhada simulada</button>
 <label id="align-label" class="check"><input id="align" type="checkbox" checked>Alinhar os primeiros passos com a direção da visita</label>
 <small id="relative-help">Ao experimentar noutro local, caminha a distância indicada em linha reta para definir a direção inicial. Depois, reproduz as curvas do percurso. Terminar e voltar a começar guarda uma nova posição de partida.</small>
 <button id="gps" class="secondary" disabled>Verificar a minha localização</button><button id="reset" class="secondary" disabled>Voltar à primeira imagem</button>
 <details><summary>Introduzir coordenadas</summary><div class="row"><label>Latitude<input id="lat" type="number" step="any" min="-90" max="90"></label><label>Longitude<input id="lng" type="number" step="any" min="-180" max="180"></label></div><button id="custom" class="secondary" disabled>Testar coordenadas</button></details>
-<details><summary>Diagnóstico de localização</summary><p id="technical-status" class="technical">A preparar…</p><p id="diagnostics" class="technical">A verificar…</p><a href="https://jf-cem.github.io/tour-r02-teste/?v=7.2" target="_blank" rel="noopener">Abrir diretamente no navegador</a>
-<small>Versão 7.2. Raio de 100 m. Precisão máxima de 20 m. Mudanças confirmadas com duas atualizações e margem de 2 m. O minimapa usa OpenStreetMap. O mapa Google da skin original continua sem chave de API.</small></details>
+<details><summary>Diagnóstico de localização</summary><p id="technical-status" class="technical">A preparar…</p><p id="diagnostics" class="technical">A verificar…</p><a href="https://jf-cem.github.io/tour-r02-teste/?v=7.3" target="_blank" rel="noopener">Abrir diretamente no navegador</a>
+<small>Versão 7.3. Raio de 100 m. Precisão máxima de 20 m. Mudanças confirmadas com duas atualizações e margem de 2 m. O minimapa usa OpenStreetMap. O mapa Google da skin original continua sem chave de API.</small></details>
 </details></div></details>
 <section id="route-strip" aria-label="Progresso ao longo da visita"><div class="route-heading"><strong>Percurso</strong><span id="route-position">A aguardar caminhada</span><button id="route-map-toggle" aria-pressed="false">Mapa</button></div><svg id="route-line"  role="img" aria-label="Pontos do percurso. Verde: panorama atual. Azul: posição."></svg><div id="route-labels" aria-hidden="true"></div></section>
 <section id="mini-map-panel" aria-label="Mapa da visita"><div class="map-heading"><strong>Mapa</strong><button id="map-size" aria-label="Ampliar mapa" aria-expanded="false" title="Ampliar mapa">↗</button><button id="map-resize" aria-expanded="false" aria-controls="map-resize-tools" aria-label="Redimensionar o mapa" title="Redimensionar o mapa">↔</button><button id="map-close" aria-label="Ocultar mapa">×</button></div><div id="map-resize-tools" hidden><label for="map-width">Tamanho <output id="map-width-value">160 px</output></label><input id="map-width" type="range" min="160" max="280" step="10" value="160" aria-label="Largura do mapa"></div><div id="mini-map" role="region" aria-label="Pontos da visita e posição durante a caminhada"></div><p id="map-caption">A preparar o mapa…</p></section>
 <button id="map-launch" hidden>Mostrar mapa</button>
-<script src="geo.js?v=7.2"></script><script src="3rdparty/leaflet/leaflet.js"></script><script src="gps-start.js?v=7.2"></script><script src="route-strip.js?v=7.2"></script><script src="minimap.js?v=7.2"></script><script src="tour-controls.js?v=7.2"></script><script src="test-ui.js?v=7.2"></script></body></html>
+<script src="geo.js?v=7.3"></script><script src="3rdparty/leaflet/leaflet.js"></script><script src="gps-start.js?v=7.3"></script><script src="route-strip.js?v=7.3"></script><script src="minimap.js?v=7.3"></script><script src="tour-controls.js?v=7.3"></script><script src="test-ui.js?v=7.3"></script></body></html>

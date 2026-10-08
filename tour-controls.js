@@ -3,7 +3,7 @@
   const frame=document.getElementById('tour'),button=document.getElementById('motion-toggle'),message=document.getElementById('motion-message');
   let player,noticeTimer,pending=false,layoutQueued=false,observer;
   function notice(text){message.textContent=text;message.hidden=false;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>message.hidden=true,7000);}
-  function sync(){if(!player)return;const enabled=player.getUseGyro();button.textContent=enabled?'Movimento ✓':'Olhar à volta';button.setAttribute('aria-pressed',String(enabled));button.title=enabled?'Desativar o movimento do telemóvel':'Mover o telemóvel para olhar à volta';}
+  function sync(){if(!player)return;const enabled=player.getUseGyro();button.textContent=enabled?'Movimento ligado ✓':'Olhar movendo o telemóvel';button.setAttribute('aria-pressed',String(enabled));button.setAttribute('aria-label',enabled?'Desativar o movimento do telemóvel':'Olhar movendo o telemóvel');button.title=enabled?'Desativar o movimento do telemóvel':'Mover o telemóvel para olhar à volta';}
   button.onclick=async()=>{
     if(!player||pending)return;
     if(player.getUseGyro()){player.setUseGyro(false);sync();notice('Movimento desativado. Podes explorar a imagem com o dedo.');return;}

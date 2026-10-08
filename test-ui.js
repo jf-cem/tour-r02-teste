@@ -10,7 +10,25 @@ function status(text, friendly = text) {
   document.getElementById('technical-status').textContent = text;
   statusBox.textContent = friendly;
 }
+function walkState(state) {
+  document.body.dataset.walkState=state;
+  const active=state==='preparing'||state==='walking';
+  document.getElementById('walk-setup').hidden=active;
+  document.getElementById('follow').hidden=active;
+  document.getElementById('walking-help').hidden=!active;
+  document.getElementById('walk-state-title').textContent={loading:'A carregar a visita',ready:'Pronto para começar',preparing:'A preparar a caminhada',walking:'Caminhada em curso',finished:'Caminhada terminada',error:'Verifica a localização'}[state];
+  if(active){document.getElementById('test-tools').open=false;document.getElementById('explore-help').open=false;}
+}
+function syncModeChoices(){
+  document.querySelectorAll('[data-mode]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.mode===document.getElementById('gps-mode').value)));
+}
+document.querySelectorAll('[data-mode]').forEach(button=>button.onclick=()=>{
+  document.getElementById('gps-mode').value=button.dataset.mode;
+  modeChanged();
+});
+walkState('loading');
 function activeTracking() {
+  walkState('walking');
   document.getElementById('follow').disabled=true;
   document.getElementById('follow').textContent='Caminhada em curso';
   document.getElementById('stop').disabled=false;
@@ -23,7 +41,7 @@ async function diagnostics() {
   const policy = document.permissionsPolicy || document.featurePolicy;
   let allowed = 'não verificável';
   try { allowed = policy ? (policy.allowsFeature('geolocation') ? 'permitida' : 'bloqueada') : allowed; } catch (_) {}
-  document.getElementById('diagnostics').textContent = `Versão: 7.1\nHTTPS: ${window.isSecureContext ? 'sim' : 'não'}\nAPI de localização: ${navigator.geolocation ? 'disponível' : 'indisponível'}\nPermissão reportada pelo navegador: ${permissionState}\nPolítica da página: ${allowed}\nPágina dentro de outra aplicação/frame: ${window.top !== window.self ? 'sim' : 'não'}\nÚltimo erro: ${lastError || 'nenhum'}\nNavegador: ${navigator.userAgent}`;
+  document.getElementById('diagnostics').textContent = `Versão: 7.3\nHTTPS: ${window.isSecureContext ? 'sim' : 'não'}\nAPI de localização: ${navigator.geolocation ? 'disponível' : 'indisponível'}\nPermissão reportada pelo navegador: ${permissionState}\nPolítica da página: ${allowed}\nPágina dentro de outra aplicação/frame: ${window.top !== window.self ? 'sim' : 'não'}\nÚltimo erro: ${lastError || 'nenhum'}\nNavegador: ${navigator.userAgent}`;
   document.getElementById('diagnostics').textContent+=`\nPreparação inicial: ${preparationSummary}`;
 }
 function stopTracking() {
@@ -32,6 +50,7 @@ function stopTracking() {
   if (routeTimer !== null) clearInterval(routeTimer);
   if (preparationTimer !== null) clearInterval(preparationTimer);
   preparationTimer=null;
+  walkState(ready?'ready':'loading');
   document.getElementById('use-position').hidden=true;
   document.getElementById('use-position').onclick=null;
   watchId = null; routeTimer = null;
@@ -82,7 +101,7 @@ function gpsError(error, current) {
   if (current !== revision) return;
   lastError = `Código ${error.code}: ${error.message || '(sem mensagem do navegador)'}`;
   const retrying = watchId !== null && error.code !== 1;
-  if (!retrying) stopTracking();
+  if (!retrying) {stopTracking();walkState('error');}
   const messages = {1:'O navegador bloqueou a localização (código 1). Isso também pode acontecer quando o acesso está bloqueado pelo sistema ou pela aplicação que abriu o link, mesmo com a permissão do site ativa.',2:'O navegador não conseguiu obter uma posição (código 2).',3:'Não chegou uma posição dentro do tempo de espera (código 3).'};
   if (!retrying) { try { openNode(data.start); } catch (_) {} }
   status((messages[error.code] || 'Não foi possível obter a localização.') + (retrying ? '\nO acompanhamento continua ativo, à espera de outra posição.' : '\nAbre “Diagnóstico de localização” e indica a permissão reportada e o último erro. Podes continuar com a caminhada simulada.'), error.code===1 ? 'Não conseguimos aceder à localização. Verifica a permissão no Safari ou Chrome e tenta novamente.' : retrying ? 'A localização está temporariamente indisponível. A caminhada continua ativa, à espera de sinal.' : 'Não foi possível obter a tua localização. Tenta novamente.');
@@ -109,6 +128,7 @@ function startGps(follow) {
     const chosen=manual?result.fallback:{...result.position,accuracy:result.accuracy};
     if(!chosen)return;
     preparationSummary=`${manual?'Escolha manual':'Estável'} · ${result.count} leituras · ${Math.round(result.elapsed/1000)} s · precisão do aparelho ±${Math.round(chosen.accuracy)} m`;
+    walkState('walking');
     preparing=false;clearInterval(preparationTimer);preparationTimer=null;continueButton.hidden=true;
     directionDistance=Math.max(8,Math.min(30,chosen.accuracy*2));
     document.getElementById('follow').textContent='Caminhada em curso';
@@ -123,7 +143,7 @@ function startGps(follow) {
     const accuracy=result.accuracy===null?'A aguardar sinal':`±${Math.round(result.accuracy)} m`;
     document.getElementById('gps-quality').textContent=`GPS: ${accuracy}`;
     status(`Preparação inicial · ${result.count}/5 leituras\nPrecisão do aparelho: ${accuracy}\nDispersão: ${Number.isFinite(result.spread)?result.spread.toFixed(1)+' m':'a aguardar'}\nTempo: ${Math.floor(result.elapsed/1000)} s.`,
-      seconds>0?`A preparar a localização… Fica parado por cerca de ${seconds} segundos. GPS: ${accuracy}.`:
+      seconds>0?`A preparar a localização… Fica parado por cerca de ${seconds} segundos.`:
       result.fallback?'A posição ainda oscila. Podes aguardar ou começar com a melhor leitura recente.':
       'A preparar a localização… Fica parado enquanto confirmamos várias leituras estáveis.');
   }
@@ -171,7 +191,7 @@ function startGps(follow) {
   if (follow) {
     watchId = navigator.geolocation.watchPosition(success, error => gpsError(error,current), options);
     activeTracking();
-    if(preparing){document.getElementById('follow').textContent='A preparar localização…';reportPreparation(preparation.snapshot(Date.now()));preparationTimer=setInterval(()=>reportPreparation(preparation.snapshot(Date.now())),1000);}
+    if(preparing){walkState('preparing');document.getElementById('follow').textContent='A preparar localização…';reportPreparation(preparation.snapshot(Date.now()));preparationTimer=setInterval(()=>reportPreparation(preparation.snapshot(Date.now())),1000);}
   } else navigator.geolocation.getCurrentPosition(success, error => gpsError(error,current), options);
 }
 function trackedPosition(tracker, coords, accuracy, source) {
@@ -189,16 +209,17 @@ document.getElementById('gps').onclick = () => startGps(false);
 document.getElementById('follow').onclick = () => startGps(true);
 function modeChanged() {
   stopTracking();
+  syncModeChoices();
   window.TourMap?.reset();
   const relative=document.getElementById('gps-mode').value==='relative';
   document.getElementById('align-label').hidden=!relative;
   document.getElementById('relative-help').hidden=!relative;
-  document.getElementById('mode-help').textContent=relative ? 'Vais começar na primeira imagem, onde quer que estejas. Os primeiros passos definem a direção da caminhada.' : 'A visita abre a imagem mais próxima de ti e acompanha o teu percurso. Podes começar em qualquer ponto do local.';
+  document.getElementById('mode-help').textContent=relative ? 'Os primeiros passos em linha reta definem a direção da visita.' : 'A visita começa na imagem mais próxima da tua localização.';
   status(relative ? 'Teste aqui: ao iniciar, a tua posição passa a ser P01.' : 'Modo no local real: o GPS é comparado com as coordenadas originais da tour.','Pronto. Toca em “Começar caminhada” e permite o acesso à localização.');
 }
 document.getElementById('gps-mode').onchange=modeChanged;
 document.getElementById('align').onchange=modeChanged;
-document.getElementById('stop').onclick = () => { stopTracking(); status('Acompanhamento / simulação parado. Podes navegar livremente.','Caminhada terminada. Podes continuar a explorar pelas setas ou começar de novo.'); };
+document.getElementById('stop').onclick = () => { stopTracking(); walkState('finished'); status('Acompanhamento / simulação parado. Podes navegar livremente.','Caminhada terminada. Podes continuar a explorar pelas setas ou começar de novo.'); };
 document.getElementById('route').onclick = () => {
   stopTracking();
   window.TourMap?.reset();
@@ -247,7 +268,7 @@ async function init() {
         } catch (e) { clearInterval(timer); reject(e); }
       }, 200);
     });
-    ready=true;
+    ready=true;walkState('ready');syncModeChoices();
     const player=frame.contentWindow.pano;
     window.TourControls?.init(player);
     const updateLabel=()=>{
